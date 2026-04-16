@@ -1,0 +1,15 @@
+<p>Hello {{employeeName}},</p><br></br><br></br>
+
+<p>Your profile details have been updated by {{updatedBy}}.</p><br></br><br></br>
+
+<p>Here are the updated details:</p><br></br>
+
+<ul>
+  {{#each updatedFields}}
+    <li><strong>{{@key}}:</strong> {{this}}</li>
+  {{/each}}
+</ul><br></br><br></br>
+
+<p>If you did not expect this change or have any concerns, please contact your system administrator.</p><br></br><br></br>
+
+<p>Thanks,<br/>Team E-360</p>

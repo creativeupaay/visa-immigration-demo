@@ -1,0 +1,50 @@
+{
+  "name": "client",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "devh": "vite --host",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.0.1",
+    "@mui/material": "^7.0.1",
+    "@mui/x-date-pickers": "^8.1.0",
+    "@reduxjs/toolkit": "^2.6.1",
+    "@tailwindcss/vite": "^4.0.13",
+    "axios": "^1.8.2",
+    "date-fns": "^4.1.0",
+    "dayjs": "^1.11.13",
+    "react": "^18.3.1",
+    "react-calendly": "^4.3.1",
+    "react-dom": "^18.3.1",
+    "react-multi-select-component": "^4.3.4",
+    "react-redux": "^9.2.0",
+    "react-select": "^5.10.1",
+    "react-select-country-list": "^2.2.3",
+    "react-toastify": "^11.0.5",
+    "tailwindcss": "^4.0.13"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.21.0",
+    "@iconify/react": "^5.2.0",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@types/react-select-country-list": "^2.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.21.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "eslint-plugin-react-refresh": "^0.4.19",
+    "globals": "^15.15.0",
+    "react-router-dom": "^7.3.0",
+    "typescript": "~5.7.2",
+    "typescript-eslint": "^8.24.1",
+    "vite": "^6.2.0"
+  }
+}

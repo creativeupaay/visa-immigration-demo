@@ -1,0 +1,18 @@
+<p>Hello {{assigneeName}},</p><br></br><br></br>
+
+<p>The following new members have been assigned to the task you're already part of:</p><br></br><br></br>
+
+<ul>
+  <li><strong>Task:</strong> {{taskName}}</li><br></br>
+  <li><strong>New Assignees:</strong></li><br></br>
+  <ul>
+    {{#each newAssigneeNames}}
+      <li>{{this}}</li>
+    {{/each}}
+  </ul><br></br>
+  <li><strong>Assigned By:</strong> {{assignedBy}}</li>
+</ul>
+
+<p>You may coordinate with the new team members for better task collaboration.</p><br></br><br></br>
+
+<p>Thanks,<br/>Team E-360</p>

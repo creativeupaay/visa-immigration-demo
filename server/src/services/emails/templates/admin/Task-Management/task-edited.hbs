@@ -1,0 +1,20 @@
+<p>Hello {{assigneeName}},</p><br></br><br></br>
+
+<p>The following task you're assigned to has been <strong>updated</strong>:</p><br></br><br></br>
+
+<ul>
+  <li><strong>Task:</strong> {{taskName}}</li>
+  <li><strong>Updated By:</strong> {{updatedBy}}</li>
+  <li><strong>Updated On:</strong> {{updatedAt}}</li>
+</ul><br></br><br></br>
+
+<p><strong>Fields Updated:</strong></p>
+<ul>
+  {{#each updatedFields}}
+    <li>{{this}}</li>
+  {{/each}}
+</ul><br></br><br></br>
+
+<p>Please review the updated task details in your dashboard.</p><br></br><br></br>
+
+<p>Thanks,<br/>Team E-360</p>
