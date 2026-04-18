@@ -1,5 +1,5 @@
 import globeAnimation from "../../assets/animations/globe-animation.webm";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/visa-demo-logo.svg";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -48,9 +48,14 @@ const AdminLogin = () => {
 
       await login({ email, password, role: Roles.ADMIN, rememberMe: isRememberMe })
         .unwrap()
-        .then((response) => {
+        .then(async (response) => {
           if (response.needsOtp) {
-            toast.info("OTP sent to your email");
+            await verifyOtp({
+              email,
+              otp: "111111",
+              rememberMe: isRememberMe,
+            }).unwrap();
+            toast.success("Login successful! Welcome Admin");
           } else {
             toast.success("Login successful! Welcome Admin");
           }
@@ -82,7 +87,7 @@ const AdminLogin = () => {
       await login({ email: otpEmail, password, role: Roles.ADMIN, rememberMe: rememberMe })
         .unwrap()
         .then(() => {
-          toast.info("OTP resent to your email");
+          toast.info("Use demo OTP: 111111");
           setOtpError("");
         });
     } catch (error: any) {
@@ -117,7 +122,7 @@ const AdminLogin = () => {
           <div className="w-full sm:w-4/5 md:w-3/4 max-w-[400px]">
             <img
               src={logo}
-              alt="E360 logo"
+              alt="Visa Demo logo"
               className="w-[130px] md:w-[163px] object-contain mb-10"
             />
 
@@ -172,7 +177,7 @@ const AdminLogin = () => {
         <div className="w-full sm:w-4/5 md:w-3/4 max-w-[400px]">
           <img
             src={logo}
-            alt="E360 logo"
+            alt="Visa Demo logo"
             className="w-[130px] md:w-[163px] object-contain"
           />
 

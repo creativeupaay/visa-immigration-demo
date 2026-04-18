@@ -7,6 +7,10 @@ import AdminLogin from "./pages/admin/AdminLogin";
 import ForgotPassword from "./features/auth/components/ForgotPassword";
 import ResetPassword from "./features/auth/components/ResetPasword";
 import ClientPaymentComponent from "./components/ClientPaymentComponent";
+import DemoLeadFormPage from "./pages/public/DemoLeadFormPage";
+import DemoReadinessPage from "./pages/public/DemoReadinessPage";
+import MockCalendlyPage from "./pages/public/MockCalendlyPage";
+import MockPaymentPage from "./pages/public/MockPaymentPage";
 import { useFetchUserQuery } from "./features/auth/authApi";
 import { RootState } from "./app/store";
 import { useSelector } from "react-redux";
@@ -33,6 +37,10 @@ const App = () => {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path="/payments/:leadId" element={<ClientPaymentComponent />} />
+        <Route path="/demo/lead-form" element={<DemoLeadFormPage />} />
+        <Route path="/demo/readiness" element={<DemoReadinessPage />} />
+        <Route path="/mock/calendly" element={<MockCalendlyPage />} />
+        <Route path="/mock/payment" element={<MockPaymentPage />} />
 
         {/* Admin routes */}
         <Route

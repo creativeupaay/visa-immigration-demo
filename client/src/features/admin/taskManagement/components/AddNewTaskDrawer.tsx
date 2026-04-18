@@ -22,6 +22,7 @@ import { toast } from "react-toastify";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { createDemoFile } from "../../../../utils/createDemoFile";
 
 const AddNewTaskDrawer = ({
   open,
@@ -79,6 +80,12 @@ const AddNewTaskDrawer = ({
     setMediaFiles((prev) =>
       prev.filter((file) => file.name !== fileNameToDelete)
     );
+  };
+
+  const handleAddDemoFile = () => {
+    const demoFile = createDemoFile(`visa-demo-task-${Date.now()}.pdf`);
+    setMediaFiles((prev) => [...prev, demoFile]);
+    toast.info("Demo file attached");
   };
 
   const handleAddTask = async () => {
@@ -356,6 +363,17 @@ const AddNewTaskDrawer = ({
           <IconButton>
             <CloudUploadIcon />
           </IconButton>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddDemoFile();
+            }}
+            sx={{ textTransform: "none", borderRadius: 2 }}
+          >
+            Use Demo File
+          </Button>
 
           {/* Display file chips if media is selected */}
           {mediaFiles.length > 0 && (

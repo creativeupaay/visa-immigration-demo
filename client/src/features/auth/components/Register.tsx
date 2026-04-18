@@ -1,4 +1,4 @@
-import logo from "../../../assets/logo.png";
+import logo from "../../../assets/visa-demo-logo.svg";
 import globeAnimation from "../../../assets/animations/globe-animation.webm";
 import { Icon } from "@iconify/react";
 import Toggle from "../../../components/Toggle";
@@ -51,7 +51,7 @@ const Register = () => {
         <div className="w-3/4">
           <img
             src={logo}
-            alt="E360 logo"
+            alt="Visa Demo logo"
             className="w-[163px] object-contain"
           />
 

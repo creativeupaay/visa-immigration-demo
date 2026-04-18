@@ -169,8 +169,16 @@ export const sendConsultationLink = async (req: Request, res: Response) => {
     throw new Error("Lead not found");
   }
 
+  const isMockCalendlyMode =
+    process.env.MOCK_CALENDLY_MODE === "true" ||
+    process.env.DEMO_MODE === "true" ||
+    process.env.NODE_ENV !== "production";
+
   let serviceType = "";
-  const calendlyLink = `${process.env.CALENDLY_LINK}?utm_campaign=${leadId}&utm_source=EEE360`;
+  const frontendBase = process.env.FRONTEND_URL || "http://localhost:5173";
+  const calendlyLink = isMockCalendlyMode
+    ? `${frontendBase}/mock/calendly?leadId=${leadId}`
+    : `${process.env.CALENDLY_LINK}?utm_campaign=${leadId}&utm_source=VISADEMO`;
 
   const visaType = lead.__t?.replace("Lead", "");
   if (visaType === "Dominica") {
@@ -183,20 +191,22 @@ export const sendConsultationLink = async (req: Request, res: Response) => {
     serviceType = "Dubai Business Setup";
   }
 
-  if (lead.additionalInfo?.priority === leadPriority.HIGH) {
-    await sendHighPriorityLeadEmail(
-      lead.email,
-      lead.fullName.split(" ")[0],
-      serviceType,
-      calendlyLink
-    );
-  } else {
-    await sendMediumPriorityLeadEmail(
-      lead.email,
-      lead.fullName.split(" ")[0],
-      serviceType,
-      calendlyLink
-    );
+  if (!isMockCalendlyMode) {
+    if (lead.additionalInfo?.priority === leadPriority.HIGH) {
+      await sendHighPriorityLeadEmail(
+        lead.email,
+        lead.fullName.split(" ")[0],
+        serviceType,
+        calendlyLink
+      );
+    } else {
+      await sendMediumPriorityLeadEmail(
+        lead.email,
+        lead.fullName.split(" ")[0],
+        serviceType,
+        calendlyLink
+      );
+    }
   }
 
   // Update lead status
@@ -213,7 +223,11 @@ export const sendConsultationLink = async (req: Request, res: Response) => {
 
   res
     .status(200)
-    .json({ message: "Consultation link sent successfully", calendlyLink });
+    .json({
+      message: "Consultation link sent successfully",
+      calendlyLink,
+      isMock: isMockCalendlyMode,
+    });
 };
 
 // calendly webhook
@@ -239,12 +253,12 @@ export const calendlyWebhook = async (req: Request, res: Response) => {
   // const endTime = payload?.scheduled_event?.end_time;
   const rescheduleUrl = payload?.reschedule_url;
 
-  //  Proceed only if source is EEE360
-  if (source !== "EEE360") {
-    console.log(`Webhook source is not EEE360. Ignoring this event.`);
+  //  Proceed only if source is VISADEMO
+  if (source !== "VISADEMO") {
+    console.log(`Webhook source is not VISADEMO. Ignoring this event.`);
     res
       .status(200)
-      .json({ message: "Webhook source is not EEE360, skipping." }); // res status ko change karna hai
+      .json({ message: "Webhook source is not VISADEMO, skipping." }); // res status ko change karna hai
     return;
   }
 

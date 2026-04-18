@@ -1,5 +1,5 @@
 import globeAnimation from "../../../assets/animations/globe-animation.webm";
-import logo from "../../../assets/logo.png";
+import logo from "../../../assets/visa-demo-logo.svg";
 import { Icon } from "@iconify/react";
 import Toggle from "../../../components/Toggle";
 import { useState } from "react";
@@ -31,6 +31,22 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
   const [verifyOtp, { isLoading: isOtpLoading }] = useVerifyOtpMutation();
   const dispatch = useDispatch();
 
+  const getApiErrorMessage = (error: unknown, fallback: string): string => {
+    if (
+      typeof error === "object" &&
+      error !== null &&
+      "data" in error &&
+      typeof (error as { data?: unknown }).data === "object" &&
+      (error as { data?: { message?: unknown } }).data?.message &&
+      typeof (error as { data?: { message?: unknown } }).data?.message ===
+        "string"
+    ) {
+      return (error as { data?: { message?: string } }).data?.message || fallback;
+    }
+
+    return fallback;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -46,14 +62,19 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
         rememberMe: isRememberMe 
       })
         .unwrap()
-        .then((response) => {
+        .then(async (response) => {
           if (response.needsOtp) {
-            toast.info("OTP sent to your email");
+            await verifyOtp({
+              email,
+              otp: "111111",
+              rememberMe: isRememberMe,
+            }).unwrap();
+            toast.success("Login successful!");
           } else {
             toast.success("Login successful!");
           }
         });
-    } catch (error: any) {
+    } catch {
       toast.error("Login failed. Please try again");
     }
   };
@@ -70,8 +91,8 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
         .then(() => {
           toast.success("Login successful!");
         });
-    } catch (error: any) {
-      setOtpError(error?.data?.message || "Invalid OTP. Please try again.");
+    } catch (error: unknown) {
+      setOtpError(getApiErrorMessage(error, "Invalid OTP. Please try again."));
     }
   };
 
@@ -85,10 +106,10 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
       })
         .unwrap()
         .then(() => {
-          toast.info("OTP resent to your email");
+          toast.info("Use demo OTP: 111111");
           setOtpError("");
         });
-    } catch (error: any) {
+    } catch {
       toast.error("Failed to resend OTP. Please try again.");
     }
   };
@@ -119,7 +140,7 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
           <div className="w-screen md:w-3/4">
             <img
               src={logo}
-              alt="E360 logo"
+              alt="Visa Demo logo"
               className="w-[150px] md:w-[163px] object-contain mb-10"
             />
 
@@ -150,6 +171,14 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
             </button>
           </div>
         </div>
+
+        <button
+          type="button"
+          onClick={() => window.open("/demo/readiness", "_blank", "noopener,noreferrer")}
+          className="fixed bottom-6 right-6 z-50 text-sm px-4 py-2 rounded-xl border border-neutrals-300 bg-white text-neutrals-700 hover:bg-neutrals-50 shadow-sm"
+        >
+          Read Before Demo
+        </button>
       </div>
     );
   }
@@ -179,7 +208,7 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
         <div className="w-screen md:w-3/4">
           <img
             src={logo}
-            alt="E360 logo"
+            alt="Visa Demo logo"
             className="w-[150px] md:w-[163px] object-contain"
           />
 
@@ -280,6 +309,14 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
           </Typography> */}
         </div>
       </div>
+
+      <button
+        type="button"
+        onClick={() => window.open("/demo/readiness", "_blank", "noopener,noreferrer")}
+        className="fixed bottom-6 right-6 z-50 text-sm px-4 py-2 rounded-xl border border-neutrals-300 bg-white text-neutrals-700 hover:bg-neutrals-50 shadow-sm"
+      >
+        Read Before Demo
+      </button>
     </div>
   );
 };

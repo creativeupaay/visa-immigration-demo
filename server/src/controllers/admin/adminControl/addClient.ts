@@ -69,8 +69,13 @@ export const addNewClient = async (req: Request, res: Response) => {
     }
 
   
-    //  Generate random password
-    const randomPassword = Math.random().toString(36).slice(-5); 
+    const isDemoMode =
+      process.env.DEMO_UPLOAD_MODE === "true" || process.env.NODE_ENV !== "production";
+
+    // Use a predictable password in demo so login is easy without email delivery.
+    const randomPassword = isDemoMode
+      ? "Client@12345"
+      : Math.random().toString(36).slice(-8);
   
     //  Hash the password
     const hashedPassword = await bcrypt.hash(randomPassword, 10);
@@ -125,6 +130,15 @@ export const addNewClient = async (req: Request, res: Response) => {
       message: "Client added successfully and credentials sent via email and newApplication is also created.",
       newUser: user,
       newVisaApplication : visaApplicantInfo,
+      ...(isDemoMode
+        ? {
+            demoCredentials: {
+              email: user.email,
+              password: randomPassword,
+              loginUrl: "/login",
+            },
+          }
+        : {}),
     });
 };
 

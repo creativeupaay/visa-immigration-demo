@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import { useUploadDocumentMutation } from "../features/common/commonApi";
 import { toast } from "react-toastify";
+import { createDemoFile } from "../utils/createDemoFile";
 
 // utility to get readable size
 export const getFileSizeInMB = (size: number) => {
@@ -26,14 +27,10 @@ const UploadModal = ({
   const [uploadDocument, { isLoading }] = useUploadDocumentMutation();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setSelectedFile(file); // save whole file object
+  const handleUpload = async (file: File) => {
+    setSelectedFile(file);
 
     try {
-      // console.log(file, reqStatusId);
       await uploadDocument({ reqStatusId, file }).unwrap();
       toast.success("Document uploaded successfully!");
       setIsUploadModalOpen(false);
@@ -43,6 +40,17 @@ const UploadModal = ({
     } finally {
       setSelectedFile(null);
     }
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    await handleUpload(file);
+  };
+
+  const handleUseDemoFile = async () => {
+    const demoFile = createDemoFile("visa-demo-document.pdf");
+    await handleUpload(demoFile);
   };
 
   return (
@@ -127,6 +135,12 @@ const UploadModal = ({
                       className="bg-golden-yellow-400 py-2 px-4 text-neutrals-950 rounded-xl cursor-pointer"
                     >
                       Click to Browse
+                    </button>
+                    <button
+                      onClick={handleUseDemoFile}
+                      className="bg-neutrals-500 py-2 px-4 text-neutrals-50 rounded-xl cursor-pointer"
+                    >
+                      Use Demo File
                     </button>
                     <p className="text-neutrals-400 text-xs">
                       (PDF, JPG, PNG – Max 12MB)

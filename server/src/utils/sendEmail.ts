@@ -1,8 +1,3 @@
-import { SESClient, SendEmailCommand } from "@aws-sdk/client-ses";
-
-import { Resend } from 'resend';
-const resend = new Resend(process.env.RESEND_EMAIL_API_KEY as string);
-
 // interface EmailOptions {
 //   to: string;
 //   subject: string;
@@ -71,19 +66,13 @@ export interface SendEmailOptions {
 
 
 export async function sendEmail({ to, subject, html }: SendEmailOptions): Promise<any> {
-  try {
-    const data = await resend.emails.send({
-      from:process.env.EMAIL_FROM!, // fixed sender
-      to,
-      subject,
-      html,
-    });
+  console.log('[DEMO MODE] Email suppressed', {
+    to,
+    subject,
+    previewLength: html.length,
+  });
 
-    return data;
-  } catch (error) {
-    console.error(' Email failed:', error);
-    throw error;
-  }
+  return { id: 'demo-mode-email-suppressed' };
 }
 
 

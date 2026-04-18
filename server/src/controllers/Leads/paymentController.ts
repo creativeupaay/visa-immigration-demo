@@ -43,6 +43,14 @@ import { PORTAL_LINK } from "../../config/configLinks";
 import { logPaymentDone } from "../../services/logs/triggers/leadLogs/payment/payment-done";
 import { logPaymentLinkSent } from "../../services/logs/triggers/leadLogs/payment/payment-link-sent";
 
+const isMockPaymentMode = () => {
+  return (
+    process.env.MOCK_PAYMENT_MODE === "true" ||
+    process.env.DEMO_MODE === "true" ||
+    process.env.NODE_ENV !== "production"
+  );
+};
+
 // send payment link
 export const sendPaymentLink = async (req: Request, res: Response) => {
   const leadId = req.params.leadId;
@@ -62,19 +70,26 @@ export const sendPaymentLink = async (req: Request, res: Response) => {
       .json({ message: "Your role does not have permission to do this action." });
   }
 
-  const pageUrl = `${process.env.FRONTEND_URL}/payments/${lead._id}`;
-
-  // const pageUrl = `${PORTAL_LINK}/payments/${lead._id}`
-
-  //  send link to the customer / lead
-  await sendPaymentLinkToLead(
-    lead.email,
-    lead.fullName?.split(" ")[0],
-    getServiceType(lead.__t ?? ""),
-    pageUrl
-  );
-
+  // Determine if in mock payment mode
+  const isMockMode = isMockPaymentMode();
   
+  // Generate appropriate link based on mode
+  let paymentLink: string;
+  if (isMockMode) {
+    paymentLink = `${process.env.FRONTEND_URL}/mock/payment?leadId=${leadId}&amount=${amount}&currency=${currency}`;
+  } else {
+    paymentLink = `${process.env.FRONTEND_URL}/payments/${lead._id}`;
+  }
+
+  // Send email only if not in mock mode
+  if (!isMockMode) {
+    await sendPaymentLinkToLead(
+      lead.email,
+      lead.fullName?.split(" ")[0],
+      getServiceType(lead.__t ?? ""),
+      paymentLink
+    );
+  }
 
   await logPaymentLinkSent({
     leadName : lead.fullName,
@@ -90,17 +105,18 @@ export const sendPaymentLink = async (req: Request, res: Response) => {
     email: lead.email,
     amount,
     currency,
-    paymentLink: null, // yaha isko null rakh denge
+    paymentLink: null,
     status: paymentStatus.LINKSENT,
-    source: PaymentSourceEnum.STRIPE,
+    source: isMockMode ? PaymentSourceEnum.DIRECT : PaymentSourceEnum.STRIPE,
   });
 
   await payment.save();
 
   res.status(200).json({
     success: true,
-    pageUrl,
-    meassage: "payment link successfully sent ",
+    paymentLink,
+    isMock: isMockMode,
+    message: "Payment link generated successfully",
   });
   return;
 };
@@ -130,6 +146,59 @@ export const proceedToPayment = async (req: Request, res: Response) => {
     throw new Error("Amount or currency not set in payment document");
     return;
   }
+
+  if (isMockPaymentMode()) {
+    if (
+      paymentDoc.status === paymentStatus.PAID ||
+      lead.leadStatus === leadStatus.PAYMENTDONE
+    ) {
+      res.status(200).json({
+        isMock: true,
+        alreadyPaid: true,
+        message: "Mock payment already completed",
+        redirectTo: `${process.env.FRONTEND_URL}/login`,
+      });
+      return;
+    }
+
+    const normalizedCurrency = String(currency).toLowerCase();
+    const amountInSmallestUnit = Math.round(Number(amount) * 100);
+    const mockPaymentIntentId = `mock_pi_${Date.now()}`;
+
+    paymentDoc.paymentIntentId = mockPaymentIntentId;
+    paymentDoc.source = PaymentSourceEnum.DIRECT;
+    paymentDoc.paymentMethod = "mock";
+    paymentDoc.status = paymentStatus.PENDING;
+    await paymentDoc.save();
+
+    const mockPaymentIntent = {
+      id: mockPaymentIntentId,
+      amount_received: amountInSmallestUnit,
+      currency: normalizedCurrency,
+      latest_charge: null,
+      metadata: {
+        leadId: lead._id?.toString(),
+        email: lead.email,
+        purpose: paymentPurpose.CONSULTATION,
+      },
+    } as unknown as Stripe.PaymentIntent;
+
+    await handleConsultationPaymentSuccess(
+      mockPaymentIntent,
+      paymentDoc,
+      lead,
+      lead.fullName
+    );
+
+    res.status(200).json({
+      isMock: true,
+      alreadyPaid: false,
+      message: "Mock payment completed successfully",
+      redirectTo: `${process.env.FRONTEND_URL}/login`,
+    });
+    return;
+  }
+
   // prepare data and metaData (to send in cretaeSession function)
   const productName = `Visa Consultation for ${lead.fullName}`;
   const metadata = {

@@ -46,14 +46,13 @@ const CategoryDocumentsAccordion: React.FC<Props> = ({
   source,
   refetch,
 }) => {
+  const [moveToAnotherCategory] = useMoveToAnotherCategoryMutation();
   const [selectOpenForDoc, setSelectOpenForDoc] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<string>("");
 
   if (!Array.isArray(categoryWiseDocs) || categoryWiseDocs.length === 0) {
-    return;
+    return null;
   }
-
-  const [moveToAnotherCategory] = useMoveToAnotherCategoryMutation();
 
   const handleMoveClick = async () => {
     console.log(selectOpenForDoc, selectedOption);
@@ -65,7 +64,7 @@ const CategoryDocumentsAccordion: React.FC<Props> = ({
       await moveToAnotherCategory({ documentId, body }).unwrap();
       refetch?.();
       toast.success("Succesfully moved the document!");
-    } catch (err) {
+    } catch {
       toast.error("Something went wrong try again");
     }
 
@@ -178,7 +177,7 @@ const CategoryDocumentsAccordion: React.FC<Props> = ({
                                       setSelectedOption(e.target.value)
                                     }
                                   >
-                                    {categoryWiseDocs.map((c: any) => {
+                                    {categoryWiseDocs.map((c) => {
                                       if (category.name === c.name) return null;
                                       return (
                                         <MenuItem key={c._id} value={c._id}>

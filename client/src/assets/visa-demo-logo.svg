@@ -1,0 +1,9 @@
+<svg width="320" height="90" viewBox="0 0 320 90" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="90" rx="14" fill="#0B1F3A"/>
+  <rect x="8" y="8" width="304" height="74" rx="10" stroke="#D9A441" stroke-width="2"/>
+  <path d="M34 25L47 65L60 25H70L53 74H41L24 25H34Z" fill="#F7C65A"/>
+  <text x="82" y="40" fill="#F7C65A" font-size="22" font-family="Georgia, serif" font-weight="700" letter-spacing="1.5">VISA</text>
+  <text x="82" y="64" fill="#FFFFFF" font-size="22" font-family="Georgia, serif" font-weight="700" letter-spacing="1.5">DEMO</text>
+  <circle cx="278" cy="45" r="18" stroke="#F7C65A" stroke-width="2"/>
+  <path d="M270 45H286M278 37V53" stroke="#F7C65A" stroke-width="2" stroke-linecap="round"/>
+</svg>

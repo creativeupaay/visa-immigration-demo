@@ -13,7 +13,7 @@ const PaymentMain = ({
 }: {
   stepStatusId: string;
   phase: string;
-  stepData: any;
+  stepData: { inProgressMessage?: string };
   onContinue: () => void;
 }) => {
   const { data, isLoading: isPaymentInfoLoading } = useFetchPaymentInfoQuery({
@@ -34,6 +34,17 @@ const PaymentMain = ({
       .catch((error) => {
         console.error("Error sending payment link:", error);
       });
+  };
+
+  const handleMockStripePayment = () => {
+    if (!data?.data?.amount || !data?.data?.currency) return;
+
+    const mockPaymentUrl = new URL(`${window.location.origin}/mock/payment`);
+    mockPaymentUrl.searchParams.set("stepStatusId", stepStatusId);
+    mockPaymentUrl.searchParams.set("amount", String(data.data.amount));
+    mockPaymentUrl.searchParams.set("currency", data.data.currency);
+
+    window.open(mockPaymentUrl.toString(), "_blank");
   };
 
   const handleViewInvoice = () => {
@@ -88,19 +99,34 @@ const PaymentMain = ({
       {/* Action buttons based on status */}
       <Box display="flex" gap={2} alignItems={"center"}>
         {data.data.status === "LINKSENT" && (
-          <Button
-            onClick={handleProceedToPayment}
-            variant="contained"
-            sx={{
-              bgcolor: "#F6C328",
-              color: "black",
-              borderRadius: 10,
-              textTransform: "none",
-              px: 4,
-            }}
-          >
-            Proceed to Payment
-          </Button>
+          <>
+            <Button
+              onClick={handleProceedToPayment}
+              variant="contained"
+              sx={{
+                bgcolor: "#F6C328",
+                color: "black",
+                borderRadius: 10,
+                textTransform: "none",
+                px: 4,
+              }}
+            >
+              Proceed to Payment
+            </Button>
+            <Button
+              onClick={handleMockStripePayment}
+              variant="outlined"
+              sx={{
+                color: "black",
+                borderColor: "black",
+                borderRadius: 10,
+                textTransform: "none",
+                px: 4,
+              }}
+            >
+              Mock Stripe Payment
+            </Button>
+          </>
         )}
 
         {data.data.status === "PAID" && data.data.invoiceUrl && (

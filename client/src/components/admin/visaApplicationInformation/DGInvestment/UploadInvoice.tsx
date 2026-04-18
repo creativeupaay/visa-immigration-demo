@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "@mui/material";
 import { useState, useRef, ChangeEvent } from "react";
 import { useUploadInvoiceMutation } from "../../../../features/admin/visaApplication/additional/dominicaApis";
+import { createDemoFile } from "../../../../utils/createDemoFile";
 
 type UploadStatus = "NOT_UPLOADED" | "SELECTED" | "UPLOADED";
 
@@ -30,6 +31,13 @@ const UploadInvoice: React.FC<UploadInvoiceProps> = ({ stepStatusId ,refetch}) =
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();
+  };
+
+  const handleUseDemoFile = () => {
+    const demoFile = createDemoFile("visa-demo-invoice.pdf");
+    setSelectedFile(demoFile);
+    setFileName(demoFile.name);
+    setInvoiceUploadStatus("SELECTED");
   };
 
   const handleProceed = async () => {
@@ -99,6 +107,13 @@ const UploadInvoice: React.FC<UploadInvoiceProps> = ({ stepStatusId ,refetch}) =
             disabled={isLoading}
           >
             {invoiceUploadStatus === "UPLOADED" ? "Change File" : "Upload File"}
+          </button>
+          <button
+            onClick={handleUseDemoFile}
+            className="bg-golden-yellow-400 py-1.5 md:py-1 px-1.5 md:px-3 text-neutrals-950 text-sm rounded-xl cursor-pointer ml-2"
+            disabled={isLoading}
+          >
+            Use Demo File
           </button>
         </div>
       </div>

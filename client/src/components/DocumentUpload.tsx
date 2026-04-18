@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { LinearProgress, Modal, useMediaQuery, useTheme } from "@mui/material";
+import { createDemoFile } from "../utils/createDemoFile";
 
 interface FileDataType {
   fileName: string;
@@ -171,6 +172,18 @@ const UploadModal = ({
     }
   };
 
+  const handleUseDemoFile = async () => {
+    const demoFile = createDemoFile("visa-demo-document.pdf");
+    setSelectedFileName(demoFile.name);
+
+    try {
+      await uploadFunction(demoFile);
+      setIsUploadModalOpen(false);
+    } catch (err: any) {
+      console.log(err);
+    }
+  };
+
   return (
     <Modal open={isUploadModalOpen}>
       <div
@@ -251,6 +264,12 @@ const UploadModal = ({
                       className="bg-golden-yellow-400 py-2 px-4 text-neutrals-950 rounded-xl cursor-pointer"
                     >
                       Click to Browse
+                    </button>
+                    <button
+                      onClick={handleUseDemoFile}
+                      className="bg-neutrals-500 py-2 px-4 text-neutrals-50 rounded-xl cursor-pointer"
+                    >
+                      Use Demo File
                     </button>
                     <p className="text-neutrals-400 text-xs">
                       (PDF, JPG, PNG – Max 12MB)

@@ -30,7 +30,9 @@ export const authApi = baseApi.injectEndpoints({
               })
             );
           }
-        } catch {}
+        } catch (error) {
+          console.error("Login lifecycle handling failed", error);
+        }
       },
     }),
     verifyOtp: build.mutation({
@@ -50,7 +52,9 @@ export const authApi = baseApi.injectEndpoints({
               user: { role: data.role, token: data.accessToken },
             })
           );
-        } catch {}
+        } catch (error) {
+          console.error("OTP verification lifecycle handling failed", error);
+        }
       },
     }),
     logout: build.mutation({
@@ -63,7 +67,9 @@ export const authApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           dispatch(clearAuth());
-        } catch {}
+        } catch (error) {
+          console.error("Logout lifecycle handling failed", error);
+        }
       },
     }),
     register: build.mutation({
@@ -81,7 +87,9 @@ export const authApi = baseApi.injectEndpoints({
               user: { role: data.role, token: data.accessToken },
             })
           );
-        } catch {}
+        } catch (error) {
+          console.error("Register lifecycle handling failed", error);
+        }
       },
     }),
     fetchUser: build.query({
@@ -98,7 +106,9 @@ export const authApi = baseApi.injectEndpoints({
               user: { role: data.role, token: data.accessToken },
             })
           );
-        } catch {}
+        } catch (error) {
+          console.error("Fetch user lifecycle handling failed", error);
+        }
       },
     }),
     forgotPassword: build.mutation({

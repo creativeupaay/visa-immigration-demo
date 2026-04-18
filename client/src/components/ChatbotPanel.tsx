@@ -12,6 +12,7 @@ import {
 import { formatDate } from "../utils/FormateDate";
 import ChatMessage from "./ChatMessage";
 import { toast } from "react-toastify";
+import { createDemoFile } from "../utils/createDemoFile";
 
 interface ChatbotPanelProps {
   chatVisible: boolean;
@@ -84,6 +85,23 @@ const ChatbotPanel = ({
       } finally {
         setIsPendingMessage(false);
       }
+    }
+  };
+
+  const handleDemoFileUpload = async () => {
+    if (!visaApplicationId) return;
+
+    const file = createDemoFile("visa-demo-chat.pdf");
+    setIsPendingMessage(true);
+    try {
+      await sendFile({ file, visaApplicationId }).unwrap();
+      await refetch();
+      toast.success("Demo file uploaded");
+    } catch (error) {
+      console.error("Failed to upload demo file:", error);
+      toast.error("Demo file upload failed");
+    } finally {
+      setIsPendingMessage(false);
     }
   };
 
@@ -230,6 +248,12 @@ const ChatbotPanel = ({
         <IconButton onClick={handleFileUploadClick}>
           <FileUploadIcon sx={{ color: "black" }} />
         </IconButton>
+        <button
+          onClick={handleDemoFileUpload}
+          className="text-xs px-2 py-1 bg-neutrals-500 text-neutrals-50 rounded-xl"
+        >
+          Demo File
+        </button>
         <input
           ref={fileInputRef}
           type="file"

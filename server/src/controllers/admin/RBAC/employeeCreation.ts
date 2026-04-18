@@ -8,7 +8,6 @@ import { AdminOtpModel as adminOtpModel } from "../../../models/authModels/admin
 import { logNewEmployeeCreated } from "../../../services/logs/triggers/RBAC&TaskLogs/RBAC/New-employee-created";
 import bcrypt from "bcryptjs";
 import { employeeAccountCreatedEmail } from "../../../services/emails/triggers/admin/RBAC/new-employee-created";
-import { sendEmpCreationOtp } from "../../../services/emails/triggers/admin/2FA-otp/sendEmpCreationOtp";
 import {
   RoleEnum,
   AccountStatusEnum,
@@ -243,8 +242,8 @@ export const requestOtpForEmpCreation = async (
       return next(new AppError("Root admin not found", 404));
     }
 
-    // 3. Generate OTP (improved from both versions)
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // DEMO MODE: Use fixed OTP everywhere
+    const otp = "111111";
     const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 minutes
 
     // 4. Store OTP (combined best of both approaches)
@@ -257,18 +256,13 @@ export const requestOtpForEmpCreation = async (
 
     console.log("OTP Document Created:", createdOtpDoc);
 
-    // 5. Send email (using original email format)
-    await sendEmpCreationOtp({
-      creatorEmail: rootAdmin.email,
-      otp: otp,
-      creatorName: rootAdmin.name,
-      expiresIn: 5
-    });
+    // 5. Skip email dependency in demo mode
+    console.log("[DEMO MODE] Employee creation OTP:", otp);
 
     // 6. Response (consistent with original)
     return res.status(200).json({
       success: true,
-      message: "OTP sent to root admin",
+      message: "Use demo OTP: 111111",
       otpExpiry: expiresAt // Added for frontend reference
     });
 
@@ -293,10 +287,15 @@ export const verifyOtpForEmpCreation = async (
       return next(new AppError("OTP and admin identity required", 400));
     }
 
-    // 2. Find OTP record with buffer time
+    // 2. Require demo OTP
+    if (otp.trim() !== "111111") {
+      return next(new AppError("Invalid or expired OTP", 400));
+    }
+
+    // 3. Find OTP record with buffer time
     const record = await adminOtpModel.findOne({
       creatorEmail: adminEmail,
-      otp: otp.trim(), // Trim whitespace
+      otp: "111111",
       expiresAt: { $gt: new Date(Date.now() - 60000) }, // 1-minute buffer
       verified: false
     });

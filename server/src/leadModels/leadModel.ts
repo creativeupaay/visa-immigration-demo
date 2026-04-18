@@ -66,7 +66,7 @@ LeadSchema.pre("save", async function (next) {
     do {
       const shortId = generateShortId(6); // e.g., A7C8X9
       const year = new Date().getFullYear();
-      nanoLeadId = `E360-L-${shortId}`;
+      nanoLeadId = `VISADEMO-L-${shortId}`;
 
       const existing = await LeadModel.exists({ nanoLeadId });
       exists = existing !== null;

@@ -51,6 +51,7 @@ const PaymentAndInvoiceManagement = ({
   const [amount, setAmount] = useState("100");
   const [currency, setCurrency] = useState("inr");
   const [loading, setLoading] = useState(false);
+  const [paymentLink, setPaymentLink] = useState<string>("");
 
   const [sendPaymentLink] = useSendPaymentLinkMutation();
 
@@ -77,7 +78,8 @@ const PaymentAndInvoiceManagement = ({
 
       const data = await sendPaymentLink({ leadid, body }).unwrap();
       if (data.success === true) {
-        toast.success("Payment link sent");
+        setPaymentLink(data.paymentLink);
+        toast.success("Payment link generated");
         onRefreshLead();
       } else {
         toast.error("Something went wrong");
@@ -88,6 +90,15 @@ const PaymentAndInvoiceManagement = ({
     } finally {
       setLoading(false);
       setDialogOpen(false);
+    }
+  };
+
+  const handleCopyPaymentLink = async () => {
+    try {
+      await navigator.clipboard.writeText(paymentLink);
+      toast.success("Payment link copied to clipboard!");
+    } catch {
+      toast.error("Failed to copy link");
     }
   };
 
@@ -115,7 +126,6 @@ const PaymentAndInvoiceManagement = ({
       <Box mb={2}>
         <Typography variant="subtitle1" fontWeight="bold">
           Default Price : {getDefaultPriceDisplay()}
-          {/* for {visaType || "Selected Service"}: {getDefaultPriceDisplay()} */}
         </Typography>
       </Box>
 
@@ -125,7 +135,46 @@ const PaymentAndInvoiceManagement = ({
           : `Send Payment Link:`}
       </Typography>
 
-      {paymentInfo?.status !== "PAID" && (
+      {/* Show payment link ready section after sending */}
+      {paymentLink && (
+        <Box sx={{ my: 2, p: 2, bgcolor: "#F0F8FF", borderRadius: 1, border: "1px solid #B0E0E6" }}>
+          <Typography variant="body2" sx={{ fontWeight: "bold", mb: 1 }}>
+            ✓ Payment Link Ready:
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}>
+            <Button
+              onClick={handleCopyPaymentLink}
+              variant="contained"
+              size="small"
+              sx={{
+                bgcolor: "#F6C328",
+                color: "black",
+                textTransform: "none",
+                borderRadius: "8px",
+                "&:hover": { bgcolor: "#E5B820" },
+              }}
+            >
+              📋 Copy Link
+            </Button>
+            <Button
+              onClick={() => window.open(paymentLink, "_blank")}
+              variant="outlined"
+              size="small"
+              sx={{
+                borderColor: "#F6C328",
+                color: "#F6C328",
+                textTransform: "none",
+                borderRadius: "8px",
+                "&:hover": { bgcolor: "rgba(246, 195, 40, 0.1)" },
+              }}
+            >
+              🔗 Open Payment
+            </Button>
+          </Box>
+        </Box>
+      )}
+
+      {paymentInfo?.status !== "PAID" && !paymentLink && (
         <Button
           onClick={() => setDialogOpen(true)}
           sx={{

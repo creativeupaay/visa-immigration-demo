@@ -23,6 +23,7 @@ import {
 import { Icon } from "@iconify/react";
 import { getFileSizeInMB } from "../../../components/UploadModal";
 import CategoryDocumentsAccordion from "../../../components/CategoryWiseDocumentsAccordion";
+import { createDemoFile } from "../../../utils/createDemoFile";
 
 const AdminDocumentVault = () => {
   const { visaApplicationId } = useParams();
@@ -64,6 +65,12 @@ const AdminDocumentVault = () => {
     const file = e.target.files?.[0];
     if (!file) return;
     setSelectedFile(file);
+  };
+
+  const handleUseDemoFile = () => {
+    const demoFile = createDemoFile("visa-demo-vault-document.pdf");
+    setSelectedFile(demoFile);
+    toast.info("Demo file selected");
   };
 
   //Uplaod file function
@@ -337,6 +344,12 @@ const AdminDocumentVault = () => {
                         className="bg-golden-yellow-400 py-2 px-4 text-neutrals-950 rounded-xl cursor-pointer"
                       >
                         Click to Browse
+                      </button>
+                      <button
+                        onClick={handleUseDemoFile}
+                        className="bg-neutrals-500 py-2 px-4 text-neutrals-50 rounded-xl cursor-pointer"
+                      >
+                        Use Demo File
                       </button>
                       <p className="text-neutrals-400 text-xs">
                         (PDF, JPG, PNG – Max 12MB)

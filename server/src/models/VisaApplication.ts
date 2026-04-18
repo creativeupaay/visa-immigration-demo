@@ -68,7 +68,7 @@ VisaApplicationSchema.pre("save", async function (next) {
         // const { nanoid } = await import('nanoid');
         const shortId = generateShortId(6); // e.g., A7C8X9
         const year = new Date().getFullYear();
-        nanoVisaApplicationId = `E360-L-${shortId}`;
+        nanoVisaApplicationId = `VISADEMO-L-${shortId}`;
   
         const existing = await VisaApplicationModel.exists({ nanoVisaApplicationId });
         exists = existing !== null;

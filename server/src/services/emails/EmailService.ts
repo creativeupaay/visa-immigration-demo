@@ -1,4 +1,3 @@
-import { Resend } from 'resend';
 import { EmailTemplateManager } from './EmailTemplateManager';
 
 export interface SendEmailOptions {
@@ -11,11 +10,7 @@ export interface SendEmailOptions {
 
 export class EmailService {
   private static instance: EmailService;
-  private resend: Resend;
-
-  private constructor() {
-    this.resend = new Resend(process.env.RESEND_EMAIL_API_KEY!);
-  }
+  private constructor() {}
 
   public static getInstance(): EmailService {
     if (!EmailService.instance) {
@@ -31,11 +26,12 @@ export class EmailService {
       options.variables , 
       true  // false here indicates plain text
     );
-    await this.resend.emails.send({
-      from: `E360 Consult <${process.env.EMAIL_FROM}>`,
+
+    console.log("[DEMO MODE] Email suppressed", {
       to: options.to,
       subject: options.subject,
-      html,
+      template: `${options.templateCategory}/${options.templateName}`,
+      previewLength: html.length,
     });
   }
 }

@@ -14,11 +14,26 @@ import {
   MenuItem,
   FormHelperText,
 } from "@mui/material";
-import { useState, useEffect } from "react";
-import { canProceedToNextStep } from "../../../pages/customer/dashboard/VisaApplicationProcess";
+import { useState, useEffect, useRef, type ChangeEvent } from "react";
 import UploadComponent from "./UploadComponent";
 import UploadModal from "../../UploadModal";
-import { useSubmitRequirementsMutation } from "../../../features/common/commonApi";
+import {
+  useSubmitRequirementsMutation,
+  useUploadDocumentMutation,
+} from "../../../features/common/commonApi";
+import { toast } from "react-toastify";
+import { createDemoFile } from "../../../utils/createDemoFile";
+
+interface RequirementItem {
+  reqStatusId: string;
+  requirementType: string;
+  required?: boolean;
+  reqStatus: string;
+  value?: string;
+  options?: string[];
+  question?: string;
+  reason?: string;
+}
 
 const Requirements = ({
   phase,
@@ -29,7 +44,7 @@ const Requirements = ({
   onSubmit,
 }: {
   phase: string;
-  requirementData: any;
+  requirementData: RequirementItem[];
   stepType: string;
   stepStatus: string;
   refetch: () => void;
@@ -40,30 +55,37 @@ const Requirements = ({
   const [dropdownValues, setDropdownValues] = useState<Record<string, string>>(
     {}
   );
+  const uploadAllInputRef = useRef<HTMLInputElement>(null);
 
   // API mutation hook
   const [submitRequirements, { isLoading: isSubmittingDropdown }] =
     useSubmitRequirementsMutation();
+  const [uploadDocument, { isLoading: isUploadingAll }] =
+    useUploadDocumentMutation();
 
   // Separate file requirements from dropdown requirements
   const fileRequirements = requirementData.filter(
-    (req: any) => req.requirementType !== "DROPDOWN"
+    (req) => req.requirementType !== "DROPDOWN"
   );
 
   const dropdownRequirements = requirementData.filter(
-    (req: any) => req.requirementType === "DROPDOWN"
+    (req) => req.requirementType === "DROPDOWN"
+  );
+
+  const pendingFileRequirements = fileRequirements.filter(
+    (req) => req.reqStatus === "NOT_UPLOADED" || req.reqStatus === "RE_UPLOAD"
   );
 
   // Initialize dropdown values from existing data
   useEffect(() => {
     const initialValues: Record<string, string> = {};
-    dropdownRequirements.forEach((req: any) => {
+    dropdownRequirements.forEach((req) => {
       if (req.value) {
         initialValues[req.reqStatusId] = req.value;
       }
     });
     setDropdownValues(initialValues);
-  }, [requirementData]);
+  }, [dropdownRequirements]);
 
   // Submit dropdown value immediately when changed
   const handleDropdownChange = async (reqStatusId: string, value: string) => {
@@ -88,8 +110,57 @@ const Requirements = ({
   // Check if all required dropdown values are filled
   const areAllRequiredDropdownsFilled = () => {
     return dropdownRequirements
-      .filter((req: any) => req.required)
-      .every((req: any) => dropdownValues[req.reqStatusId]);
+      .filter((req) => req.required)
+      .every((req) => dropdownValues[req.reqStatusId]);
+  };
+
+  const areAllRequiredFilesUploaded = () => {
+    return fileRequirements
+      .filter((req) => req.required)
+      .every((req) => req.reqStatus === "UPLOADED" || req.reqStatus === "VERIFIED");
+  };
+
+  const uploadFileToPendingRequirements = async (file: File) => {
+    if (pendingFileRequirements.length === 0) {
+      toast.info("All documents are already uploaded.");
+      return;
+    }
+
+    let successCount = 0;
+    let failedCount = 0;
+
+    for (const req of pendingFileRequirements) {
+      try {
+        await uploadDocument({ reqStatusId: req.reqStatusId, file }).unwrap();
+        successCount += 1;
+      } catch (error) {
+        failedCount += 1;
+        console.error("Upload failed for requirement", req.reqStatusId, error);
+      }
+    }
+
+    if (successCount > 0) {
+      toast.success(`Uploaded ${successCount} document(s) successfully.`);
+      refetch();
+    }
+
+    if (failedCount > 0) {
+      toast.error(`${failedCount} document(s) failed to upload. Please retry.`);
+    }
+  };
+
+  const handleUploadAllFiles = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+
+    if (!file) return;
+
+    await uploadFileToPendingRequirements(file);
+  };
+
+  const handleUseDemoFileForAll = async () => {
+    const demoFile = createDemoFile("visa-demo-bulk-upload.pdf");
+    await uploadFileToPendingRequirements(demoFile);
   };
 
   if (stepType !== "GENERAL") return null;
@@ -100,8 +171,43 @@ const Requirements = ({
       <div className="flex flex-col mt-24 overflow-y-auto h-72 custom-scrollbar">
         {phase === "IN_PROGRESS" ? (
           <>
-            <p className="text-neutrals-950 text-sm font-semibold">Documents</p>
-            {fileRequirements.map((data: any) => (
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-neutrals-950 text-sm font-semibold">Documents</p>
+              <div className="flex items-center gap-2 flex-wrap justify-end">
+                <input
+                  type="file"
+                  ref={uploadAllInputRef}
+                  accept="application/pdf,image/jpeg,image/png"
+                  className="hidden"
+                  onChange={handleUploadAllFiles}
+                />
+                <button
+                  type="button"
+                  onClick={handleUseDemoFileForAll}
+                  disabled={pendingFileRequirements.length === 0 || isUploadingAll}
+                  className={`py-1.5 px-4 text-sm rounded-xl whitespace-nowrap border ${
+                    pendingFileRequirements.length === 0 || isUploadingAll
+                      ? "bg-[#F5F5F5] border-[#E4E3E3] text-[#A2A2A2] cursor-not-allowed"
+                      : "bg-white border-[#726D68] text-[#37332f] cursor-pointer"
+                  }`}
+                >
+                  {isUploadingAll ? "Uploading..." : "Use Demo File For All"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => uploadAllInputRef.current?.click()}
+                  disabled={pendingFileRequirements.length === 0 || isUploadingAll}
+                  className={`py-1.5 px-4 text-sm rounded-xl whitespace-nowrap ${
+                    pendingFileRequirements.length === 0 || isUploadingAll
+                      ? "bg-[#E4E3E3] text-[#7F7E7D] cursor-not-allowed"
+                      : "bg-[#F6C328] text-neutrals-950 cursor-pointer"
+                  }`}
+                >
+                  {isUploadingAll ? "Uploading All..." : "Upload All"}
+                </button>
+              </div>
+            </div>
+            {fileRequirements.map((data) => (
               <div key={data.reqStatusId} className="mt-4">
                 <UploadComponent d={data} phase={phase} refetch={refetch} />
               </div>
@@ -136,7 +242,7 @@ const Requirements = ({
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {fileRequirements.map((data: any) => (
+                  {fileRequirements.map((data) => (
                     <TableRow key={data.reqStatusId}>
                       <TableCell>
                         <UploadComponent
@@ -226,7 +332,7 @@ const Requirements = ({
       {dropdownRequirements.length > 0 && (
         <div className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {dropdownRequirements.map((req: any) => (
+            {dropdownRequirements.map((req) => (
               <FormControl
                 key={req.reqStatusId}
                 fullWidth
@@ -254,7 +360,7 @@ const Requirements = ({
                      phase==="SUBMITTED" || req.reqStatus === "VERIFIED" || isSubmittingDropdown
                   }
                 >
-                  {req.options.map((option: string) => (
+                  {(req.options || []).map((option: string) => (
                     <MenuItem key={option} value={option}>
                       {option}
                     </MenuItem>
@@ -280,13 +386,12 @@ const Requirements = ({
           <button
             onClick={onSubmit}
             className={`px-10 py-2 rounded-4xl ${
-              canProceedToNextStep(fileRequirements) &&
-              areAllRequiredDropdownsFilled()
+              areAllRequiredFilesUploaded() && areAllRequiredDropdownsFilled()
                 ? "bg-[#F6C328] text-black cursor-pointer"
                 : "bg-[#E4E3E3] text-[#7F7E7D] cursor-not-allowed"
             }`}
             disabled={
-              !canProceedToNextStep(fileRequirements) ||
+              !areAllRequiredFilesUploaded() ||
               !areAllRequiredDropdownsFilled() ||
               isSubmittingDropdown
             }

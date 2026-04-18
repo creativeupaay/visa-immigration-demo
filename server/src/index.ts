@@ -238,7 +238,7 @@ app.post(
 
       assignDefaultLead(newLead._id as mongoose.Types.ObjectId);
 
-      const calendlyLink = `${process.env.CALENDLY_LINK}?utm_campaign=${newLead._id}&utm_source=EEE360`;
+      const calendlyLink = `${process.env.CALENDLY_LINK}?utm_campaign=${newLead._id}&utm_source=VISADEMO`;
 
       await leadEmailToAdmin(
         newLead.fullName.split(" ")[0],

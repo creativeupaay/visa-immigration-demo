@@ -57,7 +57,6 @@ const UserSchema: Schema = new Schema <IUser> ({
   },
   employeeId: {
     type: String,     
-    unique: true,
     default : null
   },
   otp: { 
@@ -73,6 +72,16 @@ const UserSchema: Schema = new Schema <IUser> ({
 {
   timestamps: true
 });
+
+// employeeId must be unique only for real employee IDs (ADMIN users).
+// This avoids duplicate key errors for non-admin users where employeeId is null.
+UserSchema.index(
+  { employeeId: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { employeeId: { $type: "string" } },
+  }
+);
 
 
 // Pre save hook 
@@ -90,7 +99,7 @@ UserSchema.pre("save", async function (next) {
 
       const shortId=generateShortId(6)
       const year = new Date().getFullYear();
-      nanoUserId = `E360-L-${shortId}`;
+      nanoUserId = `VISADEMO-L-${shortId}`;
 
       const existing = await UserModel.exists({ nanoUserId });
       exists = existing !== null;
@@ -112,7 +121,7 @@ UserSchema.pre("save", async function (next) {
 
     do {
       const shortId = generateShortId(6); // e.g., B9D2Y4
-      employeeId = `E360-E-${shortId}`;
+      employeeId = `VISADEMO-E-${shortId}`;
 
       const existing = await UserModel.exists({ employeeId });
       exists = existing !== null;

@@ -1,12 +1,13 @@
 {
-  "name": "e360consult",
+  "name": "visa-demo-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "build": "tsc && npm run copy-templates",
     "copy-templates": "copyfiles -u 1 src/services/emails/templates/**/* dist/",
     "start": "node dist/index.js",
-    "dev": "nodemon src/index.ts"
+    "dev": "nodemon src/index.ts",
+    "seed:superadmin": "ts-node src/seeds/seedSuperAdmin.ts"
   },
   "keywords": [],
   "author": "",

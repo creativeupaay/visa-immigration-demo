@@ -30,6 +30,7 @@ import { toast } from "react-toastify";
 import FileUploadIcon from "@mui/icons-material/FileUpload";
 import ExportToExcelButton from "../../../components/ExportToExcelButton";
 import { downloadClientsReport } from "../../../features/admin/myClients/myClientsApi";
+import { createDemoFile } from "../../../utils/createDemoFile";
 
 const modalStyle = {
   position: "absolute" as "absolute",
@@ -468,6 +469,20 @@ const ClientsTable: React.FC<TableProps> = ({
                   }
                 }}
               />
+            </Button>
+            <Button
+              variant="outlined"
+              onClick={() => setSelectedFile(createDemoFile("visa-demo-invoice.pdf"))}
+              sx={{
+                color: "black",
+                border: "1px solid gray",
+                borderRadius: "20px",
+                px: 3,
+                textTransform: "none",
+                mb: { xs: 2, md: 0 },
+              }}
+            >
+              Use Demo File
             </Button>
             <Typography variant="body2" sx={{ mb: { xs: 2, md: 0 } }}>
               {selectedFile ? selectedFile.name : "No file selected"}

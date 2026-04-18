@@ -3,8 +3,6 @@ import CheckIcon from '@mui/icons-material/Check';
 import CircleIcon from '@mui/icons-material/Circle';
 
 const ProcessComponent = ({ label, date, status ,message}:{ label:string; date:string; status:string,message?:string }) => {
-  {date}
-  
   return (
     <Box
       sx={{
@@ -49,6 +47,9 @@ const ProcessComponent = ({ label, date, status ,message}:{ label:string; date:s
           <Box>
             <Typography sx={{ fontWeight: 500, fontSize: 16, color: '#222' }}>
               {label}
+            </Typography>
+            <Typography sx={{ fontSize: 12, color: '#777' }}>
+              {date}
             </Typography>
             <Typography sx={{ fontSize: 14, color: '#555' }}>
               {message}

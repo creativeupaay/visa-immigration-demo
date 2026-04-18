@@ -30,6 +30,7 @@ import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import EditIcon from "@mui/icons-material/Edit";
 import AssignmentTurnedInIcon from "@mui/icons-material/AssignmentTurnedIn";
 import { formatDate } from "../../../utils/FormateDate";
+import { createDemoFile } from "../../../utils/createDemoFile";
 
 const ParticularTask = () => {
   const { taskid } = useParams();
@@ -157,6 +158,12 @@ const ParticularTask = () => {
     setMediaFiles((prev) =>
       prev.filter((file) => file.name !== fileNameToDelete)
     );
+  };
+
+  const handleAddDemoFile = () => {
+    const demoFile = createDemoFile(`visa-demo-task-${Date.now()}.pdf`);
+    setMediaFiles((prev) => [...prev, demoFile]);
+    toast.info("Demo file attached");
   };
 
   const handleToggleStatus = async () => {
@@ -589,6 +596,17 @@ const ParticularTask = () => {
           <IconButton>
             <CloudUploadIcon />
           </IconButton>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddDemoFile();
+            }}
+            sx={{ textTransform: "none", borderRadius: "15px" }}
+          >
+            Use Demo File
+          </Button>
 
           {/* Display selected file names */}
           {mediaFiles.length > 0 && (

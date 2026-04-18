@@ -43,6 +43,7 @@ const ClientEligibilityForm = ({
   const [formOpen, setFormOpen] = useState(false);
   const [remarks, setRemarks] = useState("");
   const [loading, setLoading] = useState(false);
+  const [consultationLink, setConsultationLink] = useState<string>("");
 
   const [sendConsultationLink] = useSendConsultationLinkMutation();
   const [rejectParticularLead] = useRejectParticularLeadMutation();
@@ -61,7 +62,10 @@ const ClientEligibilityForm = ({
       setLoading(true);
       if (leadid === undefined) return console.log("LeadId absent");
       const data = await sendConsultationLink(leadid).unwrap();
+      const fallbackMockLink = `${window.location.origin}/mock/calendly?leadId=${leadid}`;
+      const generatedLink = data?.calendlyLink || fallbackMockLink;
       if (data.message !== undefined) {
+        setConsultationLink(generatedLink);
         toast.success("Consultation link sent");
       } else {
         toast.error("Error somthing-went wrong. Try again");
@@ -70,6 +74,16 @@ const ClientEligibilityForm = ({
       console.error("Failed to send consultation link", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleCopyConsultationLink = async () => {
+    if (!consultationLink) return;
+    try {
+      await navigator.clipboard.writeText(consultationLink);
+      toast.success("Consultation link copied");
+    } catch (error) {
+      toast.error("Unable to copy link. Please copy manually.");
     }
   };
 
@@ -229,6 +243,47 @@ const ClientEligibilityForm = ({
               Reject Application
             </Button>
           </Box>
+
+          {consultationLink && (
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                alignItems: "center",
+                gap: 1.2,
+                mt: 1,
+              }}
+            >
+              <Typography sx={{ color: "#6f6b64", fontSize: "14px" }}>
+                Consultation Link Ready:
+              </Typography>
+              <Button
+                variant="outlined"
+                onClick={handleCopyConsultationLink}
+                sx={{
+                  color: "black",
+                  textTransform: "none",
+                  borderRadius: "10px",
+                  borderColor: "black",
+                }}
+              >
+                Copy Link
+              </Button>
+              <Button
+                variant="contained"
+                onClick={() => window.open(consultationLink, "_blank")}
+                sx={{
+                  color: "black",
+                  bgcolor: "#F6C328",
+                  textTransform: "none",
+                  borderRadius: "10px",
+                  boxShadow: "none",
+                }}
+              >
+                Open Mock Scheduler
+              </Button>
+            </Box>
+          )}
         </Box>
       )}
 
