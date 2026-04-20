@@ -330,15 +330,15 @@ export const login = async (
     const NODE_ENV = process.env.NODE_ENV;
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
+      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
       maxAge: 2 * 60 * 60 * 1000, // 2 hours
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
+      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -433,8 +433,8 @@ export const verifyOtp = async (
     const NODE_ENV = process.env.NODE_ENV;
     res.cookie("trustedDevice", trustedToken, {
       httpOnly: true,
-     secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
-        sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
+      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
       maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
     });
   }
@@ -460,15 +460,15 @@ export const verifyOtp = async (
   const NODE_ENV = process.env.NODE_ENV;
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
-        sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
+    secure: NODE_ENV === 'production' || NODE_ENV === 'development',
+    sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
     maxAge: 2 * 60 * 60 * 1000, // 2 hours
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-   secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
-        sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
+    secure: NODE_ENV === 'production' || NODE_ENV === 'development',
+    sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -528,8 +528,8 @@ export const refreshToken = async (
     const NODE_ENV = process.env.NODE_ENV;
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
+      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
       maxAge: 2 * 60 * 60 * 1000, // 2 hours
     });
 
