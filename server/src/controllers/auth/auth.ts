@@ -326,17 +326,19 @@ export const login = async (
       email: user.email,
     });
 
+
+    const NODE_ENV = process.env.NODE_ENV;
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
       maxAge: 2 * 60 * 60 * 1000, // 2 hours
     });
 
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
@@ -428,10 +430,11 @@ export const verifyOtp = async (
       { expiresIn: "90d" }
     );
 
+    const NODE_ENV = process.env.NODE_ENV;
     res.cookie("trustedDevice", trustedToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+     secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
+        sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
       maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
     });
   }
@@ -454,17 +457,18 @@ export const verifyOtp = async (
 
   await UserModel.findByIdAndUpdate(user._id, { refreshToken });
 
+  const NODE_ENV = process.env.NODE_ENV;
   res.cookie("accessToken", accessToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
+        sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
     maxAge: 2 * 60 * 60 * 1000, // 2 hours
   });
 
   res.cookie("refreshToken", refreshToken, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+   secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
+        sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
@@ -521,10 +525,11 @@ export const refreshToken = async (
       email: user.email,
     });
 
+    const NODE_ENV = process.env.NODE_ENV;
     res.cookie("accessToken", newAccessToken, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
+      secure: NODE_ENV === 'production' || NODE_ENV === 'staging',
+      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'staging' ? 'none' : 'lax',
       maxAge: 2 * 60 * 60 * 1000, // 2 hours
     });
 
