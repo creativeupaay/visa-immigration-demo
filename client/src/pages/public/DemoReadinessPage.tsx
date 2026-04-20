@@ -1,6 +1,53 @@
-import { Box, Button, Card, Divider, Stack, Typography } from "@mui/material";
+import { Box, Button, Card, Divider, Stack, Typography, Link } from "@mui/material";
+import { useState } from "react";
+import FileCopyIcon from "@mui/icons-material/FileCopy";
+import CheckIcon from "@mui/icons-material/Check";
 
 const DemoReadinessPage = () => {
+  const [copiedIndex, setCopiedIndex] = useState<string | null>(null);
+
+  const handleCopy = (text: string, index: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 2000);
+  };
+
+  const CopyIconButton = ({ text, index, label }: { text: string; index: string; label: string }) => (
+    <Button
+      startIcon={copiedIndex === index ? <CheckIcon sx={{ fontSize: 16 }} /> : <FileCopyIcon sx={{ fontSize: 16 }} />}
+      onClick={() => handleCopy(text, index)}
+      variant="contained"
+      size="small"
+      sx={{
+        textTransform: "none",
+        fontSize: "0.75rem",
+        fontWeight: 600,
+        padding: "4px 10px",
+        borderRadius: "6px",
+        background: copiedIndex === index 
+          ? "linear-gradient(135deg, #e8d5b7 0%, #d4c5a0 100%)" 
+          : "linear-gradient(135deg, #1a1a2e 0%, #2d2d4a 100%)",
+        color: copiedIndex === index ? "#1a1a2e" : "#e8d5b7",
+        boxShadow: copiedIndex === index
+          ? "0 3px 8px rgba(232, 213, 183, 0.2)"
+          : "0 3px 8px rgba(26, 26, 46, 0.2)",
+        border: "none",
+        "&:hover": {
+          background: copiedIndex === index
+            ? "linear-gradient(135deg, #d4c5a0 0%, #c0b08b 100%)"
+            : "linear-gradient(135deg, #2d2d4a 0%, #3f3f5e 100%)",
+          boxShadow: copiedIndex === index
+            ? "0 4px 10px rgba(232, 213, 183, 0.3)"
+            : "0 4px 10px rgba(26, 26, 46, 0.3)",
+          transform: "translateY(-1px)",
+        },
+        transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
+      }}
+    >
+      {copiedIndex === index ? "Copied!" : label}
+    </Button>
+  );
+
   return (
     <Box
       sx={{
@@ -35,20 +82,39 @@ const DemoReadinessPage = () => {
           <Typography>
             1. The superadmin is seeded in the database and credentials are:
           </Typography>
-          <Typography sx={{ pl: 2 }}>ID - <strong>superadmin@visaflow.com</strong></Typography>
-          <Typography sx={{ pl: 2 }}>PASS - <strong>SuperAdmin@123</strong></Typography>
+          <Stack spacing={1} sx={{ pl: 2 }}>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <Typography sx={{ minWidth: "200px" }}>ID - <strong>superadmin@demo.com</strong></Typography>
+              <CopyIconButton text="superadmin@demo.com" index="id" label="Copy ID" />
+            </Stack>
+            <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+              <Typography sx={{ minWidth: "200px" }}>PASS - <strong>SuperAdmin@123</strong></Typography>
+              <CopyIconButton text="SuperAdmin@123" index="password" label="Copy Pass" />
+            </Stack>
+          </Stack>
 
           <Typography>
             2. The OTP has been hardcoded to <strong>111111</strong> in the whole system.
           </Typography>
 
-          <Typography>
-            3. The password for created clients is hardcoded to <strong>Client@12345</strong>.
-          </Typography>
+          <Stack direction="row" spacing={1} sx={{ alignItems: "center" }}>
+            <Typography>
+              3. The password for created clients is hardcoded to <strong>Client@12345</strong>.
+            </Typography>
+            <CopyIconButton text="Client@12345" index="clientPassword" label="Copy" />
+          </Stack>
 
           <Typography>
-            4. The link to the lead generation form is:
-            <strong> {window.location.origin}/demo/lead-form</strong>
+            4. The link to the lead generation form is:{" "}
+            <Link
+              href={`${window.location.origin}/demo/lead-form`}
+              target="_blank"
+              rel="noopener noreferrer"
+              underline="hover"
+              sx={{ fontWeight: 600, color: "#1f2937" }}
+            >
+              {window.location.origin}/demo/lead-form
+            </Link>
           </Typography>
 
           <Typography>
