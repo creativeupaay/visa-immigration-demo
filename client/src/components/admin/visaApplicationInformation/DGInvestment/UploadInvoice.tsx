@@ -34,7 +34,7 @@ const UploadInvoice: React.FC<UploadInvoiceProps> = ({ stepStatusId ,refetch}) =
   };
 
   const handleUseDemoFile = () => {
-    const demoFile = createDemoFile("visa-demo-invoice.pdf");
+    const demoFile = createDemoFile("visaflow-sample-invoice.pdf");
     setSelectedFile(demoFile);
     setFileName(demoFile.name);
     setInvoiceUploadStatus("SELECTED");
@@ -113,7 +113,7 @@ const UploadInvoice: React.FC<UploadInvoiceProps> = ({ stepStatusId ,refetch}) =
             className="bg-golden-yellow-400 py-1.5 md:py-1 px-1.5 md:px-3 text-neutrals-950 text-sm rounded-xl cursor-pointer ml-2"
             disabled={isLoading}
           >
-            Use Demo File
+            Use Sample File
           </button>
         </div>
       </div>

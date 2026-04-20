@@ -91,7 +91,7 @@ const ChatbotPanel = ({
   const handleDemoFileUpload = async () => {
     if (!visaApplicationId) return;
 
-    const file = createDemoFile("visa-demo-chat.pdf");
+    const file = createDemoFile("visaflow-sample-chat.pdf");
     setIsPendingMessage(true);
     try {
       await sendFile({ file, visaApplicationId }).unwrap();
@@ -252,7 +252,7 @@ const ChatbotPanel = ({
           onClick={handleDemoFileUpload}
           className="text-xs px-2 py-1 bg-neutrals-500 text-neutrals-50 rounded-xl"
         >
-          Demo File
+          Sample File
         </button>
         <input
           ref={fileInputRef}

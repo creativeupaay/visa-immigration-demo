@@ -58,7 +58,7 @@ const getDefaultAdditionalInfo = (
       housingPlan: "Undecided but open to it",
       stayDuration: "More than 183 days per year",
       dependents: "1–4 dependents (with financial means)",
-      extraInfo: extraInfo || "Created from in-app public demo lead form",
+      extraInfo: extraInfo || "Created from in-app public lead capture form",
       priority,
     };
   }
@@ -74,7 +74,7 @@ const getDefaultAdditionalInfo = (
       budgetRange: "$10,000 – $30,000",
       movingToDubai: "I’m considering it and need more info",
       visaIssues: "No, my record is clear",
-      extraInfo: extraInfo || "Created from in-app public demo lead form",
+      extraInfo: extraInfo || "Created from in-app public lead capture form",
       priority,
     };
   }
@@ -89,7 +89,7 @@ const getDefaultAdditionalInfo = (
     budgetRange: "$150,000+",
     movingToApply: "I’m considering it and need more info",
     visaIssues: "No, my record is clear",
-    extraInfo: extraInfo || "Created from in-app public demo lead form",
+    extraInfo: extraInfo || "Created from in-app public lead capture form",
     priority,
   };
 };

@@ -60,7 +60,7 @@ const DemoLeadFormPage = () => {
       const result = await response.json();
 
       if (!response.ok || !result?.success) {
-        throw new Error(result?.message || "Failed to create demo lead");
+        throw new Error(result?.message || "Failed to create lead");
       }
 
       toast.success(
@@ -104,10 +104,10 @@ const DemoLeadFormPage = () => {
       >
         <Stack spacing={1.5} mb={3}>
           <Typography variant="h4" fontWeight={700} color="#292826">
-            Demo Lead Creation
+            VisaFlow Lead Capture
           </Typography>
           <Typography variant="body1" color="#625f59">
-            Use this public page to create demo leads directly from this website,
+            Use this public page to create leads directly from this website,
             without external webhook dependency.
           </Typography>
         </Stack>
@@ -200,7 +200,7 @@ const DemoLeadFormPage = () => {
                 "&:hover": { bgcolor: "#e5b421" },
               }}
             >
-              {isSubmitting ? "Creating Lead..." : "Create Demo Lead"}
+              {isSubmitting ? "Creating Lead..." : "Create Lead"}
             </Button>
           </Stack>
         </Box>

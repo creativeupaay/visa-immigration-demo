@@ -1,5 +1,5 @@
 {
-  "name": "visa-demo-server",
+  "name": "visaflow-server",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {

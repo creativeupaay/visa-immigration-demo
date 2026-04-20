@@ -11,7 +11,7 @@ endobj
 4 0 obj
 << /Length 63 >>
 stream
-BT /F1 12 Tf 24 100 Td (Visa Demo - Dummy Upload File) Tj ET
+BT /F1 12 Tf 24 100 Td (VisaFlow - Sample Upload File) Tj ET
 endstream
 endobj
 xref
@@ -28,7 +28,7 @@ startxref
 %%EOF`;
 
 export const createDemoFile = (
-  fileName: string = `visa-demo-${Date.now()}.pdf`
+  fileName: string = `visaflow-sample-${Date.now()}.pdf`
 ): File => {
   return new File([MINIMAL_PDF_CONTENT], fileName, {
     type: "application/pdf",

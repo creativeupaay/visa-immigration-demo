@@ -161,7 +161,7 @@ const ParticularTask = () => {
   };
 
   const handleAddDemoFile = () => {
-    const demoFile = createDemoFile(`visa-demo-task-${Date.now()}.pdf`);
+    const demoFile = createDemoFile(`visaflow-sample-task-${Date.now()}.pdf`);
     setMediaFiles((prev) => [...prev, demoFile]);
     toast.info("Demo file attached");
   };
@@ -605,7 +605,7 @@ const ParticularTask = () => {
             }}
             sx={{ textTransform: "none", borderRadius: "15px" }}
           >
-            Use Demo File
+            Use Sample File
           </Button>
 
           {/* Display selected file names */}

@@ -15,7 +15,7 @@ export const employeeAccountCreatedEmail = async ({
     role: string,             
     loginUrl: string
   }) => {
-  const subject = `Welcome to Visa Demo – Your Admin Account is Ready`;
+  const subject = `Welcome to VisaFlow – Your Admin Account is Ready`;
   const templateName = 'new-employee-created';     
   const templateCategory = 'admin/RBAC';      
 

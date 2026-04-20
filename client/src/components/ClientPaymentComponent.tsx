@@ -1,5 +1,5 @@
 import { Box, Button } from "@mui/material";
-import Logo from "../assets/visa-demo-logo.svg";
+import Logo from "../assets/visaflow-logo.svg";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useProceedToPaymentMutation } from "../features/admin/clientInformation/clientInformationApi";

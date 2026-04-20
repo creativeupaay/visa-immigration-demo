@@ -1,5 +1,5 @@
 import globeAnimation from "../../assets/animations/globe-animation.webm";
-import logo from "../../assets/visa-demo-logo.svg";
+import logo from "../../assets/visaflow-logo.svg";
 import { Icon } from "@iconify/react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -87,7 +87,7 @@ const AdminLogin = () => {
       await login({ email: otpEmail, password, role: Roles.ADMIN, rememberMe: rememberMe })
         .unwrap()
         .then(() => {
-          toast.info("Use demo OTP: 111111");
+          toast.info("Use OTP: 111111");
           setOtpError("");
         });
     } catch (error: any) {
@@ -122,7 +122,7 @@ const AdminLogin = () => {
           <div className="w-full sm:w-4/5 md:w-3/4 max-w-[400px]">
             <img
               src={logo}
-              alt="Visa Demo logo"
+              alt="VisaFlow logo"
               className="w-[130px] md:w-[163px] object-contain mb-10"
             />
 
@@ -177,7 +177,7 @@ const AdminLogin = () => {
         <div className="w-full sm:w-4/5 md:w-3/4 max-w-[400px]">
           <img
             src={logo}
-            alt="Visa Demo logo"
+            alt="VisaFlow logo"
             className="w-[130px] md:w-[163px] object-contain"
           />
 

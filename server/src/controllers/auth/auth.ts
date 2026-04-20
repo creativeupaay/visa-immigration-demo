@@ -390,7 +390,7 @@ export const login = async (
 
   return res.status(200).json({
     success: true,
-    message: "Use demo OTP: 111111",
+    message: "Use OTP: 111111",
     needsOtp: true,
   });
 };

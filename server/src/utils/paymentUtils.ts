@@ -83,8 +83,8 @@ export async function createPaymentSession(
 
     // 3. URLs after success or cancel
     // success_url: 'https://yourdomain.com/payment-success?session_id={CHECKOUT_SESSION_ID}',
-    success_url : "https://app.visademo.com",
-    cancel_url: 'https://app.visademo.com',
+    success_url : "https://app.visaflow.com",
+    cancel_url: 'https://app.visaflow.com',
 
     // 4. Metadata you want to receive back in webhook
     payment_intent_data: {

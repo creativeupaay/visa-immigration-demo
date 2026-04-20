@@ -210,7 +210,7 @@ const MockPaymentPage = () => {
                   </Typography>
                 </Box>
                 <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                  Visa Demo
+                  VisaFlow
                 </Typography>
                 <Typography
                   sx={{

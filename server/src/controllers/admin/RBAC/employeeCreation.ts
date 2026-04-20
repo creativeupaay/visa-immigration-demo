@@ -262,7 +262,7 @@ export const requestOtpForEmpCreation = async (
     // 6. Response (consistent with original)
     return res.status(200).json({
       success: true,
-      message: "Use demo OTP: 111111",
+      message: "Use OTP: 111111",
       otpExpiry: expiresAt // Added for frontend reference
     });
 

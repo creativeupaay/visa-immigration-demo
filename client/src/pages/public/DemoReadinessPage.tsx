@@ -22,7 +22,7 @@ const DemoReadinessPage = () => {
       >
         <Stack spacing={1.5}>
           <Typography variant="h4" fontWeight={700} color="#1f2937">
-            Demo Readiness Guide
+            VisaFlow Readiness Guide
           </Typography>
           <Typography color="#6b7280">
             Use this checklist before starting a demo.
@@ -35,11 +35,8 @@ const DemoReadinessPage = () => {
           <Typography>
             1. The superadmin is seeded in the database and credentials are:
           </Typography>
-          <Typography sx={{ pl: 2 }}>ID - superadmin@demo.com</Typography>
-          <Typography sx={{ pl: 2 }}>PASS - SuperAdmin@123</Typography>
-          <Typography sx={{ pl: 2 }}>
-            If not created, run <strong>npm run seed:superadmin</strong> to seed superadmin.
-          </Typography>
+          <Typography sx={{ pl: 2 }}>ID - <strong>superadmin@visaflow.com</strong></Typography>
+          <Typography sx={{ pl: 2 }}>PASS - <strong>SuperAdmin@123</strong></Typography>
 
           <Typography>
             2. The OTP has been hardcoded to <strong>111111</strong> in the whole system.

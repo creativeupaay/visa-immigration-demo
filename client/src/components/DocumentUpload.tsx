@@ -173,7 +173,7 @@ const UploadModal = ({
   };
 
   const handleUseDemoFile = async () => {
-    const demoFile = createDemoFile("visa-demo-document.pdf");
+    const demoFile = createDemoFile("visaflow-sample-document.pdf");
     setSelectedFileName(demoFile.name);
 
     try {
@@ -269,7 +269,7 @@ const UploadModal = ({
                       onClick={handleUseDemoFile}
                       className="bg-neutrals-500 py-2 px-4 text-neutrals-50 rounded-xl cursor-pointer"
                     >
-                      Use Demo File
+                      Use Sample File
                     </button>
                     <p className="text-neutrals-400 text-xs">
                       (PDF, JPG, PNG – Max 12MB)

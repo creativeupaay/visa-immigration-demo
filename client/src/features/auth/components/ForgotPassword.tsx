@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import Logo from "../../../assets/visa-demo-logo.svg";
+import Logo from "../../../assets/visaflow-logo.svg";
 import { toast } from "react-toastify";
 
 const ForgotPassword = () => {

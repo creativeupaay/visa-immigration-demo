@@ -68,7 +68,7 @@ const AdminDocumentVault = () => {
   };
 
   const handleUseDemoFile = () => {
-    const demoFile = createDemoFile("visa-demo-vault-document.pdf");
+    const demoFile = createDemoFile("visaflow-sample-vault-document.pdf");
     setSelectedFile(demoFile);
     toast.info("Demo file selected");
   };
@@ -349,7 +349,7 @@ const AdminDocumentVault = () => {
                         onClick={handleUseDemoFile}
                         className="bg-neutrals-500 py-2 px-4 text-neutrals-50 rounded-xl cursor-pointer"
                       >
-                        Use Demo File
+                        Use Sample File
                       </button>
                       <p className="text-neutrals-400 text-xs">
                         (PDF, JPG, PNG – Max 12MB)

@@ -472,7 +472,7 @@ const ClientsTable: React.FC<TableProps> = ({
             </Button>
             <Button
               variant="outlined"
-              onClick={() => setSelectedFile(createDemoFile("visa-demo-invoice.pdf"))}
+              onClick={() => setSelectedFile(createDemoFile("visaflow-sample-invoice.pdf"))}
               sx={{
                 color: "black",
                 border: "1px solid gray",
@@ -482,7 +482,7 @@ const ClientsTable: React.FC<TableProps> = ({
                 mb: { xs: 2, md: 0 },
               }}
             >
-              Use Demo File
+              Use Sample File
             </Button>
             <Typography variant="body2" sx={{ mb: { xs: 2, md: 0 } }}>
               {selectedFile ? selectedFile.name : "No file selected"}

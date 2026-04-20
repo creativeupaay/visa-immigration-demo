@@ -159,7 +159,7 @@ const Requirements = ({
   };
 
   const handleUseDemoFileForAll = async () => {
-    const demoFile = createDemoFile("visa-demo-bulk-upload.pdf");
+    const demoFile = createDemoFile("visaflow-sample-bulk-upload.pdf");
     await uploadFileToPendingRequirements(demoFile);
   };
 
@@ -191,7 +191,7 @@ const Requirements = ({
                       : "bg-white border-[#726D68] text-[#37332f] cursor-pointer"
                   }`}
                 >
-                  {isUploadingAll ? "Uploading..." : "Use Demo File For All"}
+                  {isUploadingAll ? "Uploading..." : "Use Sample File For All"}
                 </button>
                 <button
                   type="button"

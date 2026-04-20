@@ -15,6 +15,7 @@ import { useFetchUserQuery } from "./features/auth/authApi";
 import { RootState } from "./app/store";
 import { useSelector } from "react-redux";
 import { CircularProgress } from "@mui/material";
+import DemoHelpButton from "./components/DemoHelpButton";
 
 const App = () => {
   const { isLoading } = useFetchUserQuery(undefined);
@@ -30,6 +31,7 @@ const App = () => {
 
   return (
     <BrowserRouter>
+      <DemoHelpButton />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
         <Route path="/login" element={<AuthPage mode="SIGN_IN" />} />

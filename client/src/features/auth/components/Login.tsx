@@ -1,5 +1,5 @@
 import globeAnimation from "../../../assets/animations/globe-animation.webm";
-import logo from "../../../assets/visa-demo-logo.svg";
+import logo from "../../../assets/visaflow-logo.svg";
 import { Icon } from "@iconify/react";
 import Toggle from "../../../components/Toggle";
 import { useState } from "react";
@@ -106,7 +106,7 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
       })
         .unwrap()
         .then(() => {
-          toast.info("Use demo OTP: 111111");
+          toast.info("Use OTP: 111111");
           setOtpError("");
         });
     } catch {
@@ -140,7 +140,7 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
           <div className="w-screen md:w-3/4">
             <img
               src={logo}
-              alt="Visa Demo logo"
+              alt="VisaFlow logo"
               className="w-[150px] md:w-[163px] object-contain mb-10"
             />
 
@@ -172,13 +172,6 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => window.open("/demo/readiness", "_blank", "noopener,noreferrer")}
-          className="fixed bottom-6 right-6 z-50 text-sm px-4 py-2 rounded-xl border border-neutrals-300 bg-white text-neutrals-700 hover:bg-neutrals-50 shadow-sm"
-        >
-          Read Before Demo
-        </button>
       </div>
     );
   }
@@ -208,7 +201,7 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
         <div className="w-screen md:w-3/4">
           <img
             src={logo}
-            alt="Visa Demo logo"
+            alt="VisaFlow logo"
             className="w-[150px] md:w-[163px] object-contain"
           />
 
@@ -310,13 +303,6 @@ const Login: React.FC<LoginProps> = ({ userRole = Roles.USER }) => {
         </div>
       </div>
 
-      <button
-        type="button"
-        onClick={() => window.open("/demo/readiness", "_blank", "noopener,noreferrer")}
-        className="fixed bottom-6 right-6 z-50 text-sm px-4 py-2 rounded-xl border border-neutrals-300 bg-white text-neutrals-700 hover:bg-neutrals-50 shadow-sm"
-      >
-        Read Before Demo
-      </button>
     </div>
   );
 };

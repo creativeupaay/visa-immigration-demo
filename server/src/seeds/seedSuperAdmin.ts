@@ -7,7 +7,7 @@ import { RoleEnum, AccountStatusEnum } from "../types/enums/enums";
 
 dotenv.config();
 
-const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/visademo";
+const MONGO_URI = process.env.MONGO_URI || "mongodb://localhost:27017/visaflow";
 
 // Define roles to be seeded
 const ROLES = [
@@ -21,7 +21,7 @@ const ROLES = [
 // Superadmin user details - these can be customized
 const SUPERADMIN_USER = {
   name: "Super Administrator",
-  email: "superadmin@visademo.com",
+  email: "superadmin@visaflow.com",
   phone: "+1234567890",
   nationality: "USA",
   password: "SuperAdmin@123", // Change this in production

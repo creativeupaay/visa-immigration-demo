@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Icon } from "@iconify/react";
 import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Button } from "@mui/material";
-import logoMark from "../assets/visa-demo-logo.svg";
+import logoMark from "../assets/visaflow-logo.svg";
 import { useLogoutMutation } from "../features/auth/authApi";
 
 export type TAB = {
@@ -164,7 +164,7 @@ const Sidebar = ({ tabs }: { tabs: TAB[] }) => {
           <div className="w-full h-full flex justify-center flex-[0.14]">
             <img
               src={logoMark}
-              alt="Visa Demo logo"
+              alt="VisaFlow logo"
               className="w-[190px] object-contain"
             />
           </div>

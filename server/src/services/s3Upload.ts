@@ -19,7 +19,7 @@ const s3 = new S3Client({
 
 const createDummyFileUrl = (originalName: string) => {
   const safeName = encodeURIComponent(originalName || "demo-file.pdf");
-  return `https://demo.visademo.local/uploads/${Date.now()}-${safeName}`;
+  return `https://demo.visaflow.local/uploads/${Date.now()}-${safeName}`;
 };
 
 const addDummyUrlsToRequestFiles = (req: Request) => {
@@ -82,7 +82,7 @@ export const upload = createWrappedUploader(isDemoUploadMode ? demoUpload : real
  */
 export const deleteImageFromS3 = async (imageUrl: string): Promise<void> => {
   try {
-    if (isDemoUploadMode || imageUrl.includes("demo.visademo.local/uploads")) {
+    if (isDemoUploadMode || imageUrl.includes("demo.visaflow.local/uploads")) {
       console.log("[DEMO MODE] Skipping S3 delete for", imageUrl);
       return;
     }

@@ -83,7 +83,7 @@ const AddNewTaskDrawer = ({
   };
 
   const handleAddDemoFile = () => {
-    const demoFile = createDemoFile(`visa-demo-task-${Date.now()}.pdf`);
+    const demoFile = createDemoFile(`visaflow-sample-task-${Date.now()}.pdf`);
     setMediaFiles((prev) => [...prev, demoFile]);
     toast.info("Demo file attached");
   };
@@ -372,7 +372,7 @@ const AddNewTaskDrawer = ({
             }}
             sx={{ textTransform: "none", borderRadius: 2 }}
           >
-            Use Demo File
+            Use Sample File
           </Button>
 
           {/* Display file chips if media is selected */}

@@ -18,7 +18,7 @@ export const sendPortalAccessToClient = async (
     variables: {
       FirstName: firstName,
       Service: service,
-      PortalLink: "https://app.visademo.com",
+      PortalLink: "https://app.visaflow.com",
       Email: to,
       Password: password,
       WhatsAppLink: WHATSAPP_LINK,

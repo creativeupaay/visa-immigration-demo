@@ -2,7 +2,7 @@ import  { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useResetPasswordMutation } from '../authApi';
 import { TextField, Button, Typography, Box, CircularProgress } from '@mui/material';
-import Logo from "../../../assets/visa-demo-logo.svg" 
+import Logo from "../../../assets/visaflow-logo.svg" 
 import { toast } from 'react-toastify';
 const ResetPassword = () => {
   const [newPassword, setNewPassword] = useState('');
