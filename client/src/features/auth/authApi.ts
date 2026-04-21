@@ -101,14 +101,17 @@ export const authApi = baseApi.injectEndpoints({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
+          // Session is valid — restore auth state
           dispatch(
             setAuth({
               loading: false,
               user: { role: data.role, token: data.accessToken },
             })
           );
-        } catch (error) {
-          console.error("Fetch user lifecycle handling failed", error);
+        } catch {
+          // Session is invalid (access token expired + refresh failed)
+          // Explicitly clear auth so ProtectedRoute redirects to login
+          dispatch(clearAuth());
         }
       },
     }),

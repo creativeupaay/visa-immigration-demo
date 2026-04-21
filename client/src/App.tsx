@@ -1,4 +1,4 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import AdminRoutes from "./pages/admin/AdminRoutes";
 import CustomerRoutes from "./pages/customer/CustomerRoutes";
 import ProtectedRoute from "./utils/ProtectedRoute";
@@ -18,10 +18,36 @@ import { useSelector } from "react-redux";
 import { CircularProgress } from "@mui/material";
 import DemoHelpButton from "./components/DemoHelpButton";
 
-const App = () => {
-  const { isLoading } = useFetchUserQuery(undefined);
+/**
+ * PUBLIC_PATHS: routes where we skip the fetchUser query.
+ * This prevents unnecessary 401 errors on the login page
+ * which would otherwise spam the console and potentially trigger
+ * the refresh flow on pages that don't need auth.
+ */
+const PUBLIC_PATHS = [
+  "/login",
+  "/admin/login",
+  "/forgot-password",
+  "/reset-password",
+  "/demo",
+  "/mock",
+  "/payments",
+];
+
+const AppContent = () => {
+  const location = useLocation();
+  const isPublicRoute = PUBLIC_PATHS.some((p) =>
+    location.pathname.startsWith(p)
+  );
+
+  // Skip fetchUser on public pages — avoids 401 spam on the login screen.
+  // On protected pages, this runs once on mount to restore session from cookie.
+  const { isLoading } = useFetchUserQuery(undefined, {
+    skip: isPublicRoute,
+  });
   const { loading } = useSelector((state: RootState) => state.auth);
 
+  // Only block rendering while the session check is in-flight (first load on protected page)
   if (isLoading || loading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -31,7 +57,7 @@ const App = () => {
   }
 
   return (
-    <BrowserRouter>
+    <>
       <DemoHelpButton />
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
@@ -66,6 +92,14 @@ const App = () => {
           }
         />
       </Routes>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <BrowserRouter>
+      <AppContent />
     </BrowserRouter>
   );
 };

@@ -4,8 +4,9 @@ import axios, {
   AxiosError, 
   InternalAxiosRequestConfig,
 } from 'axios';
-// Store is not imported here to avoid circular dependency.
-// window.location.href redirect resets Redux state via page reload.
+// NOTE: Do NOT import store here — it creates a circular dependency
+// (store → api → axiosBaseQuery → store). The window.location redirect
+// achieves the same effect (full page reload resets Redux state).
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -24,6 +25,20 @@ interface QueueItem {
   resolve: (value?: unknown) => void;
   reject: (reason?: unknown) => void;
 }
+
+/** Pages where we must NOT redirect to login (would cause infinite loop) */
+const PUBLIC_PATHS = [
+  '/login',
+  '/admin/login',
+  '/forgot-password',
+  '/reset-password',
+  '/demo',
+  '/mock',
+  '/payments',
+];
+
+const isPublicPath = () =>
+  PUBLIC_PATHS.some((p) => window.location.pathname.startsWith(p));
 
 let isRefreshing = false;
 let failedQueue: QueueItem[] = [];
@@ -66,10 +81,13 @@ const axiosBaseQuery = ({
     async (error: AxiosError) => {
       const originalRequest = error.config as CustomAxiosRequestConfig;
 
+      // Only attempt token refresh for 401 (Unauthorized / expired token).
+      // Do NOT intercept 403 — that means Permission Denied (different role),
+      // not an auth failure. Intercepting 403 causes unnecessary refresh loops.
       if (
-        (error.response?.status === 401 || error.response?.status === 403) &&
+        error.response?.status === 401 &&
         !originalRequest.url?.includes(refreshUrl) &&
-        !originalRequest.url?.includes("/auth/logout") &&
+        !originalRequest.url?.includes('/auth/logout') &&
         !originalRequest._retry
       ) {
         if (!isRefreshing) {
@@ -87,11 +105,8 @@ const axiosBaseQuery = ({
             return axiosInstance(originalRequest);
           } catch (refreshError) {
             processQueue(refreshError as AxiosError, null);
-            // Only redirect if NOT already on a login/public page
-            // (prevents infinite reload loop when unauthenticated)
-            const PUBLIC_PATHS = ['/login', '/admin/login', '/forgot-password', '/demo', '/mock', '/reset-password'];
-            const isAlreadyPublic = PUBLIC_PATHS.some((p) => window.location.pathname.startsWith(p));
-            if (!isAlreadyPublic) {
+            // Only redirect when NOT already on a public page
+            if (!isPublicPath()) {
               const isAdminPath = window.location.pathname.startsWith('/admin');
               window.location.href = isAdminPath ? '/admin/login' : '/login';
             }
