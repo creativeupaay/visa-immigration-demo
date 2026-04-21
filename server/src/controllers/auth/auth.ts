@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import { CookieOptions, NextFunction, Request, Response } from "express";
 import AppError from "../../utils/appError";
 import { UserModel } from "../../models/Users";
 // import { TrustedDeviceModel } from "../../models/authModels/trustedDevices";
@@ -13,6 +13,41 @@ import { sendForgotPasswordEmail } from "../../services/emails/triggers/customer
 import jwt from "jsonwebtoken";
 import { PORTAL_LINK } from "../../config/configLinks";
 import mongoose from "mongoose";
+
+const getSameSitePolicy = (): "none" | "lax" | "strict" => {
+  const envValue = (process.env.COOKIE_SAME_SITE || "").toLowerCase();
+  if (envValue === "none" || envValue === "lax" || envValue === "strict") {
+    return envValue;
+  }
+
+  // Default to cross-site safe cookies in production deployments.
+  return process.env.NODE_ENV === "production" ? "none" : "lax";
+};
+
+const getCookieOptions = (maxAge: number): CookieOptions => {
+  const sameSite = getSameSitePolicy();
+  const secure = sameSite === "none" ? true : process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite,
+    maxAge,
+    path: "/",
+  };
+};
+
+const getClearCookieOptions = (): CookieOptions => {
+  const sameSite = getSameSitePolicy();
+  const secure = sameSite === "none" ? true : process.env.NODE_ENV === "production";
+
+  return {
+    httpOnly: true,
+    secure,
+    sameSite,
+    path: "/",
+  };
+};
 
 // sign-up
 export const registerUser = async (
@@ -326,29 +361,16 @@ export const login = async (
       email: user.email,
     });
 
-
-    const NODE_ENV = process.env.NODE_ENV;
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
-      maxAge: 2 * 60 * 60 * 1000, // 2 hours
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    res.cookie("accessToken", accessToken, getCookieOptions(2 * 60 * 60 * 1000));
+    res.cookie("refreshToken", refreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000));
 
     return { accessToken, refreshToken };
   };
 
   if (user.role === RoleEnum.USER) {
-    const { accessToken } = generateAndSetTokens();
+    const { accessToken, refreshToken } = generateAndSetTokens();
     await UserModel.findByIdAndUpdate(user._id, {
-      refreshToken: generateAndSetTokens().refreshToken,
+      refreshToken,
     });
 
     return res.status(200).json({
@@ -365,9 +387,9 @@ export const login = async (
     try {
       const decoded = jwt.verify(trustedDevice, process.env.ACCESS_TOKEN_SECRET!) as any;
       if (decoded.userId === String(user._id)) {
-        const { accessToken } = generateAndSetTokens();
+        const { accessToken, refreshToken } = generateAndSetTokens();
         await UserModel.findByIdAndUpdate(user._id, {
-          refreshToken: generateAndSetTokens().refreshToken,
+          refreshToken,
         });
 
         return res.status(200).json({
@@ -430,13 +452,7 @@ export const verifyOtp = async (
       { expiresIn: "90d" }
     );
 
-    const NODE_ENV = process.env.NODE_ENV;
-    res.cookie("trustedDevice", trustedToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
-      maxAge: 90 * 24 * 60 * 60 * 1000, // 90 days
-    });
+    res.cookie("trustedDevice", trustedToken, getCookieOptions(90 * 24 * 60 * 60 * 1000));
   }
 
   const accessToken = generateAccessToken({
@@ -457,20 +473,8 @@ export const verifyOtp = async (
 
   await UserModel.findByIdAndUpdate(user._id, { refreshToken });
 
-  const NODE_ENV = process.env.NODE_ENV;
-  res.cookie("accessToken", accessToken, {
-    httpOnly: true,
-    secure: NODE_ENV === 'production' || NODE_ENV === 'development',
-    sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
-    maxAge: 2 * 60 * 60 * 1000, // 2 hours
-  });
-
-  res.cookie("refreshToken", refreshToken, {
-    httpOnly: true,
-    secure: NODE_ENV === 'production' || NODE_ENV === 'development',
-    sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-  });
+  res.cookie("accessToken", accessToken, getCookieOptions(2 * 60 * 60 * 1000));
+  res.cookie("refreshToken", refreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000));
 
   return res.status(200).json({
     success: true,
@@ -504,7 +508,13 @@ export const refreshToken = async (
   res: Response,
   next: NextFunction
 ): Promise<Response | void> => {
-  const refreshToken = req.cookies.refreshToken;
+  const authHeader = req.headers.authorization;
+  const bearerToken =
+    authHeader && authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
+
+  const refreshToken = req.cookies.refreshToken || req.body?.refreshToken || bearerToken;
   if (!refreshToken) {
     return next(new AppError("Refresh token is required", 403));
   }
@@ -525,13 +535,7 @@ export const refreshToken = async (
       email: user.email,
     });
 
-    const NODE_ENV = process.env.NODE_ENV;
-    res.cookie("accessToken", newAccessToken, {
-      httpOnly: true,
-      secure: NODE_ENV === 'production' || NODE_ENV === 'development',
-      sameSite: NODE_ENV === 'production' ? 'strict' : NODE_ENV === 'development' ? 'none' : 'lax',
-      maxAge: 2 * 60 * 60 * 1000, // 2 hours
-    });
+    res.cookie("accessToken", newAccessToken, getCookieOptions(2 * 60 * 60 * 1000));
 
     res.status(200).json({ accessToken: newAccessToken });
   } catch (err: any) {
@@ -545,18 +549,7 @@ export const logout = async (
   next: NextFunction
 ): Promise<Response | void> => {
   const refreshToken = req.cookies.refreshToken;
-
-  const NODE_ENV = process.env.NODE_ENV;
-  const cookieOptions = {
-    httpOnly: true,
-    secure: NODE_ENV === "production" || NODE_ENV === "development",
-    sameSite:
-      NODE_ENV === "production"
-        ? ("strict" as const)
-        : NODE_ENV === "development"
-          ? ("none" as const)
-          : ("lax" as const),
-  };
+  const cookieOptions = getClearCookieOptions();
 
   try {
     if (refreshToken) {

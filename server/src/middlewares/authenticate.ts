@@ -47,8 +47,13 @@ declare global {
 }
 
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
+  const authHeader = req.headers.authorization;
+  const bearerToken =
+    authHeader && authHeader.startsWith("Bearer ")
+      ? authHeader.split(" ")[1]
+      : null;
 
-  const token = req.cookies["accessToken"]
+  const token = req.cookies["accessToken"] || bearerToken;
   
   if (!token) {
     return next(new AppError("Token must be provided", 401));
@@ -70,7 +75,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
       return next(new AppError("Unauthorized: Invalid token", 401));
     }
   } catch (err) {
-    res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    return next(new AppError("Unauthorized: Invalid token", 401));
   }
 };
 

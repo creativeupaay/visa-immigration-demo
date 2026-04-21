@@ -14,11 +14,11 @@ interface TokenPayload {
 
 
 export const generateAccessToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: Number(process.env.ACCESS_TOKEN_EXPIRATION)  });
+  return jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET!, { expiresIn: parseInt(process.env.ACCESS_TOKEN_EXPIRATION || "7200", 10) });
 };
 
 export const generateRefreshToken = (payload: TokenPayload): string => {
-  return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: Number(process.env.REFRESH_TOKEN_EXPIRATION) });
+  return jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET!, { expiresIn: parseInt(process.env.REFRESH_TOKEN_EXPIRATION || "604800", 10) });
 };
 
 export const verifyAccessToken = (token: string): TokenPayload => {

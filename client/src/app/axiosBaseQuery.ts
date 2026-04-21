@@ -4,8 +4,8 @@ import axios, {
   AxiosError, 
   InternalAxiosRequestConfig,
 } from 'axios';
-// import { clearAuth } from '../features/auth/authSlice';
-// import store from './store';
+// Store is not imported here to avoid circular dependency.
+// window.location.href redirect resets Redux state via page reload.
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -67,7 +67,7 @@ const axiosBaseQuery = ({
       const originalRequest = error.config as CustomAxiosRequestConfig;
 
       if (
-        error.response?.status === 401 &&
+        (error.response?.status === 401 || error.response?.status === 403) &&
         !originalRequest.url?.includes(refreshUrl) &&
         !originalRequest.url?.includes("/auth/logout") &&
         !originalRequest._retry
@@ -87,7 +87,14 @@ const axiosBaseQuery = ({
             return axiosInstance(originalRequest);
           } catch (refreshError) {
             processQueue(refreshError as AxiosError, null);
-            // store.dispatch(clearAuth()); 
+            // Only redirect if NOT already on a login/public page
+            // (prevents infinite reload loop when unauthenticated)
+            const PUBLIC_PATHS = ['/login', '/admin/login', '/forgot-password', '/demo', '/mock', '/reset-password'];
+            const isAlreadyPublic = PUBLIC_PATHS.some((p) => window.location.pathname.startsWith(p));
+            if (!isAlreadyPublic) {
+              const isAdminPath = window.location.pathname.startsWith('/admin');
+              window.location.href = isAdminPath ? '/admin/login' : '/login';
+            }
             return Promise.reject(refreshError);
           } finally {
             isRefreshing = false;
