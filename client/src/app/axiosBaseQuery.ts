@@ -69,6 +69,7 @@ const axiosBaseQuery = ({
       if (
         error.response?.status === 401 &&
         !originalRequest.url?.includes(refreshUrl) &&
+        !originalRequest.url?.includes("/auth/logout") &&
         !originalRequest._retry
       ) {
         if (!isRefreshing) {

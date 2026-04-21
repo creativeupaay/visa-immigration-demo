@@ -545,35 +545,32 @@ export const logout = async (
   next: NextFunction
 ): Promise<Response | void> => {
   const refreshToken = req.cookies.refreshToken;
-  console.log(refreshToken);
-  if (!refreshToken) {
-    return next(new AppError("Refresh token is required", 400));
-  }
+
+  const NODE_ENV = process.env.NODE_ENV;
+  const cookieOptions = {
+    httpOnly: true,
+    secure: NODE_ENV === "production" || NODE_ENV === "development",
+    sameSite:
+      NODE_ENV === "production"
+        ? ("strict" as const)
+        : NODE_ENV === "development"
+          ? ("none" as const)
+          : ("lax" as const),
+  };
 
   try {
-    let user = await UserModel.findOneAndUpdate(
-      { refreshToken },
-      { $unset: { refreshToken: "" } }
-    );
-
-    if (!user) {
-      return next(new AppError("Invalid refresh token", 401));
+    if (refreshToken) {
+      await UserModel.findOneAndUpdate(
+        { refreshToken },
+        { $unset: { refreshToken: "" } }
+      );
     }
 
-    res.status(200).clearCookie("accessToken", {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-    });
+    res.clearCookie("accessToken", cookieOptions);
+    res.clearCookie("refreshToken", cookieOptions);
+    res.clearCookie("trustedDevice", cookieOptions);
 
-    res
-      .status(200)
-      .clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "strict",
-      })
-      .json({ message: "Logged out successfully" });
+    return res.status(200).json({ message: "Logged out successfully" });
   } catch (err: any) {
     next(new AppError("Error logging out", 500));
   }

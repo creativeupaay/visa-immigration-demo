@@ -4,6 +4,7 @@ import {
   useDubaiProceedToPaymentMutation,
   useFetchPaymentInfoQuery,
 } from "../../../../features/admin/visaApplication/additional/dubaiApis";
+import { openMockInvoice } from "../../../../utils/openMockInvoice";
 
 const PaymentMain = ({
   stepStatusId,
@@ -48,9 +49,17 @@ const PaymentMain = ({
   };
 
   const handleViewInvoice = () => {
-    if (data?.data?.invoiceUrl) {
-      window.open(data.data.invoiceUrl, "_blank");
-    }
+    if (!data?.data) return;
+
+    openMockInvoice({
+      amount: data.data.amount,
+      currency: data.data.currency,
+      status: data.data.status,
+      invoiceId: data.data.invoiceUrl
+        ? data.data.invoiceUrl.split("/").pop()
+        : undefined,
+      source: "Customer Journey",
+    });
   };
 
   if (isPaymentInfoLoading) {
@@ -129,7 +138,7 @@ const PaymentMain = ({
           </>
         )}
 
-        {data.data.status === "PAID" && data.data.invoiceUrl && (
+        {data.data.status === "PAID" && (
           <Button
             onClick={handleViewInvoice}
             variant="contained"

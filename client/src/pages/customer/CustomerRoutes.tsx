@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import Dashboard from "./dashboard/Dashboard";
 import CustomerLayout from "./CustomerLayout";
 import PrevApplications from "./application/PrevApplications";
@@ -12,19 +12,21 @@ const CustomerRoutes = () => {
   return (
     <Routes>
       <Route element={<CustomerLayout />}>
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/applications" element={<PrevApplications />} />
-        <Route path="/notification" element={<Notification />} />
-        <Route path="/settings" element={<Settings />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
+        <Route path="dashboard" element={<Dashboard />} />
+        <Route path="applications" element={<PrevApplications />} />
+        <Route path="notification" element={<Notification />} />
+        <Route path="settings" element={<Settings />} />
         <Route
-          path="/application/:visaApplicationId"
+          path="application/:visaApplicationId"
           element={<VisaApplicationProcess />}
         />
         <Route
-          path="/documentVault/:visaApplicationId"
+          path="documentVault/:visaApplicationId"
           element={<ClientDocumentVault />}
         />
       </Route>
+      <Route path="*" element={<Navigate to="dashboard" replace />} />
     </Routes>
   );
 };

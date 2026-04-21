@@ -11,6 +11,7 @@ import DemoLeadFormPage from "./pages/public/DemoLeadFormPage";
 import DemoReadinessPage from "./pages/public/DemoReadinessPage";
 import MockCalendlyPage from "./pages/public/MockCalendlyPage";
 import MockPaymentPage from "./pages/public/MockPaymentPage";
+import MockInvoicePage from "./pages/public/MockInvoicePage";
 import { useFetchUserQuery } from "./features/auth/authApi";
 import { RootState } from "./app/store";
 import { useSelector } from "react-redux";
@@ -43,6 +44,7 @@ const App = () => {
         <Route path="/demo/readiness" element={<DemoReadinessPage />} />
         <Route path="/mock/calendly" element={<MockCalendlyPage />} />
         <Route path="/mock/payment" element={<MockPaymentPage />} />
+        <Route path="/mock/invoice" element={<MockInvoicePage />} />
 
         {/* Admin routes */}
         <Route

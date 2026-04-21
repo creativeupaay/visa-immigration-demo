@@ -15,6 +15,7 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useFetchPaymentInfoQuery, useSendDubaiPaymentLinkMutation } from "../../../../features/admin/visaApplication/additional/dubaiApis";
+import { openMockInvoice } from "../../../../utils/openMockInvoice";
 
 type PaymentComponentProps = {
   stepStatusId: string;
@@ -51,9 +52,17 @@ const PaymentComponent = ({ stepStatusId }: PaymentComponentProps) => {
   };
 
   const handleOpenInvoice = () => {
-    if (data?.data?.invoiceUrl) {
-      window.open(data.data.invoiceUrl, "_blank");
-    }
+    if (!data?.data) return;
+
+    openMockInvoice({
+      amount: data.data.amount,
+      currency: data.data.currency,
+      status: data.data.status,
+      invoiceId: data.data.invoiceUrl
+        ? data.data.invoiceUrl.split("/").pop()
+        : undefined,
+      source: "Admin Visa Application",
+    });
   };
 
   if (isPaymentInfoLoading) {

@@ -27,6 +27,7 @@ import {
 } from "./invoicesManagementApi";
 import { useSearchPagination } from "../../searchPagination/useSearchPagination";
 import ExportToExcelButton from "../../../components/ExportToExcelButton";
+import { openMockInvoice } from "../../../utils/openMockInvoice";
 
 const InvoicesManagementTable: React.FC = () => {
   const theme = useTheme();
@@ -100,6 +101,27 @@ const InvoicesManagementTable: React.FC = () => {
 
   const statuses = ["PENDING", "PAID", "FAILED"];
 
+  const getInvoiceId = (row: any, index: number): string => {
+    if (row?.invoiceUrl) {
+      const parsedId = row.invoiceUrl.split("/").pop();
+      if (parsedId) return parsedId;
+    }
+
+    return row?.invoiceId || row?._id || row?.id || `MOCK-INV-${index + 1}`;
+  };
+
+  const openInvoicePreview = (row: any, index: number) => {
+    openMockInvoice({
+      amount: row?.amount,
+      currency: row?.currency,
+      status: row?.status,
+      invoiceId: getInvoiceId(row, index),
+      customerName: row?.name,
+      customerEmail: row?.email,
+      source: row?.source,
+    });
+  };
+
   const handleExportToExcel = async (startDate: string, endDate: string) => {
     try {
       await downloadInvoicesReport(startDate, endDate);
@@ -163,12 +185,9 @@ const InvoicesManagementTable: React.FC = () => {
 
       <Box>
         <Button
-          onClick={() =>
-            row?.invoiceUrl && window.open(row.invoiceUrl, "_blank")
-          }
+          onClick={() => openInvoicePreview(row, index)}
           variant="outlined"
           fullWidth
-          disabled={!row?.invoiceUrl}
           sx={{
             mt: 2,
             textTransform: "none",
@@ -335,11 +354,7 @@ const InvoicesManagementTable: React.FC = () => {
                         </TableCell>
                         <TableCell align="right" sx={{ borderBottom: "none" }}>
                           <Button
-                            onClick={() =>
-                              row?.invoiceUrl &&
-                              window.open(row.invoiceUrl, "_blank")
-                            }
-                            disabled={!row?.invoiceUrl}
+                            onClick={() => openInvoicePreview(row, index)}
                             sx={{
                               color: "black",
                               textTransform: "none",

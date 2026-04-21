@@ -7,7 +7,8 @@
     "copy-templates": "copyfiles -u 1 src/services/emails/templates/**/* dist/",
     "start": "node dist/index.js",
     "dev": "nodemon src/index.ts",
-    "seed:superadmin": "ts-node src/seeds/seedSuperAdmin.ts"
+    "seed:superadmin": "ts-node src/seeds/seedSuperAdmin.ts",
+    "seed:demo-data": "ts-node src/seeds/seedDemoData.ts"
   },
   "keywords": [],
   "author": "",

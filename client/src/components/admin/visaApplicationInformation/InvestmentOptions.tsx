@@ -3,6 +3,7 @@ import { Box, Button, TextField, Typography, Chip } from "@mui/material";
 import { useAddRealStateOptionsMutation } from "../../../features/admin/visaApplicationInformation/visaApplicationInformationApi";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { toast } from "react-toastify";
+import { openMockInvoice } from "../../../utils/openMockInvoice";
 
 const InvestmentOptionMap: Record<string, string> = {
   EDF: "Economic Diversification Fund",
@@ -219,7 +220,13 @@ const InvestmentOptions = ({
           {invoiceUrl && (
             <div className="flex items-center space-x-4">
               <button
-                onClick={() => window.open(invoiceUrl)}
+                onClick={() =>
+                  openMockInvoice({
+                    status: "PAID",
+                    invoiceId: invoiceUrl ? invoiceUrl.split("/").pop() : undefined,
+                    source: "DG Investment",
+                  })
+                }
                 className="bg-neutrals-500 py-1 px-3 text-neutrals-50 text-sm rounded-xl cursor-pointer"
                 disabled={isLoading}
               >

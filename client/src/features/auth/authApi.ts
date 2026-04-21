@@ -66,9 +66,10 @@ export const authApi = baseApi.injectEndpoints({
       async onQueryStarted(_, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          dispatch(clearAuth());
         } catch (error) {
           console.error("Logout lifecycle handling failed", error);
+        } finally {
+          dispatch(clearAuth());
         }
       },
     }),

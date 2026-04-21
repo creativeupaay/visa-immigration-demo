@@ -18,6 +18,7 @@ import { PaymentInfoTypes } from "../../../features/admin/clientInformation/clie
 import { useSendPaymentLinkMutation } from "../../../features/admin/clientInformation/clientInformationApi";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { openMockInvoice } from "../../../utils/openMockInvoice";
 
 // Define visa pricing structure types
 interface PricingInfo {
@@ -200,9 +201,17 @@ const PaymentAndInvoiceManagement = ({
           <Typography sx={{ mt: 2 }}>
             Invoice:{" "}
             <a
-              href={paymentInfo?.invoice}
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#"
+              onClick={(event) => {
+                event.preventDefault();
+                openMockInvoice({
+                  status: paymentInfo?.status,
+                  invoiceId: paymentInfo?.invoice
+                    ? paymentInfo.invoice.split("/").pop()
+                    : undefined,
+                  source: "Admin Client Information",
+                });
+              }}
               style={{
                 color: "#F8CC51",
                 textDecoration: "underline",
