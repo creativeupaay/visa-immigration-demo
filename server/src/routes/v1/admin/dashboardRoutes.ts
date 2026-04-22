@@ -24,10 +24,12 @@ router.get("/fetchRecentLeads",
 addArrayForStaff("Leads"),
 asyncHandler(dashboard.fetchRecentLeads));
 
-router.get("/fetchRecentConsultions" ,
- checkPermission("View-Consultations"),
- addArrayForStaff("Consultations"),
-asyncHandler(dashboard.fetchRecentConsultions));
+router.get("/fetchRecentConsultions",
+ authenticate, authorizeAdmin,
+  checkPermission("View-Consultations"),
+  addArrayForStaff("Consultations"),
+ asyncHandler(dashboard.fetchRecentConsultions));
+
 
 
 router.get("/fetchAnalytics",

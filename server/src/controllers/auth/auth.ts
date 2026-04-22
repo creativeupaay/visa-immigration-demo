@@ -514,19 +514,24 @@ export const refreshToken = async (
       ? authHeader.split(" ")[1]
       : null;
 
-  const refreshToken = req.cookies.refreshToken || req.body?.refreshToken || bearerToken;
-  if (!refreshToken) {
+  const token = req.cookies.refreshToken || req.body?.refreshToken || bearerToken;
+  if (!token) {
     return next(new AppError("Refresh token is required", 403));
   }
 
   try {
-    let user = await UserModel.findOne({ refreshToken });
+    // 1. Verify the JWT cryptographically first — this is the primary trust check.
+    //    If the signature is invalid or token is expired, jwt.verify() throws and
+    //    we reject below. This works even if the DB field is stale/missing.
+    const payload = verifyRefreshToken(token);
 
+    // 2. Load the user by ID from the verified payload.
+    const user = await UserModel.findById(payload.id);
     if (!user) {
-      return next(new AppError("Invalid refresh token", 401));
+      return next(new AppError("User not found", 401));
     }
 
-    const payload = verifyRefreshToken(refreshToken);
+    // 3. Issue a new access token.
     const newAccessToken = generateAccessToken({
       id: payload.id,
       role: payload.role,
@@ -535,11 +540,22 @@ export const refreshToken = async (
       email: user.email,
     });
 
+    // 4. Rotate: persist the new refresh token in DB so stale tokens are
+    //    rejected on the *next* refresh attempt (soft revocation).
+    const newRefreshToken = generateRefreshToken({
+      id: payload.id,
+      role: payload.role,
+      roleId: String(user.roleId),
+      userName: user.name,
+      email: user.email,
+    });
+    await UserModel.findByIdAndUpdate(payload.id, { refreshToken: newRefreshToken });
+    res.cookie("refreshToken", newRefreshToken, getCookieOptions(7 * 24 * 60 * 60 * 1000));
     res.cookie("accessToken", newAccessToken, getCookieOptions(2 * 60 * 60 * 1000));
 
     res.status(200).json({ accessToken: newAccessToken });
   } catch (err: any) {
-    next(new AppError("Invalid refresh token", 403));
+    next(new AppError("Invalid or expired refresh token", 403));
   }
 };
 
