@@ -14,37 +14,24 @@ import jwt from "jsonwebtoken";
 import { PORTAL_LINK } from "../../config/configLinks";
 import mongoose from "mongoose";
 
-const getSameSitePolicy = (): "none" | "lax" | "strict" => {
-  const envValue = (process.env.COOKIE_SAME_SITE || "").toLowerCase();
-  if (envValue === "none" || envValue === "lax" || envValue === "strict") {
-    return envValue;
-  }
-
-  // Default to cross-site safe cookies in production deployments.
-  return process.env.NODE_ENV === "production" ? "none" : "lax";
-};
-
+// SameSite=None + Secure=true is required for cross-domain cookie sharing
+// (frontend and backend on different domains/subdomains).
+// This is intentional for this deployment setup.
 const getCookieOptions = (maxAge: number): CookieOptions => {
-  const sameSite = getSameSitePolicy();
-  const secure = sameSite === "none" ? true : process.env.NODE_ENV === "production";
-
   return {
     httpOnly: true,
-    secure,
-    sameSite,
+    secure: true,       // required when SameSite=None
+    sameSite: "none",  // allow cross-domain cookies
     maxAge,
     path: "/",
   };
 };
 
 const getClearCookieOptions = (): CookieOptions => {
-  const sameSite = getSameSitePolicy();
-  const secure = sameSite === "none" ? true : process.env.NODE_ENV === "production";
-
   return {
     httpOnly: true,
-    secure,
-    sameSite,
+    secure: true,
+    sameSite: "none",
     path: "/",
   };
 };
