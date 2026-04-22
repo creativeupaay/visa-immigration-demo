@@ -680,23 +680,35 @@ export const changePassword = async (
 // };
 
 export const fetchUser = async (req: Request, res: Response) => {
-  if (req.admin) {
-    return res.status(200).json({
-      success: true,
-      message: "Login successfully",
-      role: req?.admin?.role,
-    });
-  } else if (req.user) {
-    return res.status(200).json({
-      success: true,
-      message: "Login successfully",
-      role: req?.user?.role,
+  const payload = req.admin || req.user;
+
+  if (!payload) {
+    return res.status(401).json({
+      success: false,
+      message: "User not authenticated",
     });
   }
 
-  return res.status(401).json({
-    success: false,
-    message: "User not authenticated",
+  // Issue a fresh access token and rotate the cookie.
+  // This is critical for deployed (cross-origin) environments where
+  // the browser may not send the httpOnly cookie on cross-origin requests.
+  // Returning the token in the JSON body lets the client store it in Redux
+  // and send it as a Bearer token on subsequent requests.
+  const freshAccessToken = generateAccessToken({
+    id: payload.id,
+    role: payload.role,
+    roleId: payload.roleId,
+    userName: payload.userName,
+    email: payload.email,
+  });
+
+  res.cookie("accessToken", freshAccessToken, getCookieOptions(2 * 60 * 60 * 1000));
+
+  return res.status(200).json({
+    success: true,
+    message: "Session restored successfully",
+    role: payload.role,
+    accessToken: freshAccessToken,
   });
 };
 

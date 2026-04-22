@@ -5,8 +5,8 @@ import axios, {
   InternalAxiosRequestConfig,
 } from 'axios';
 // NOTE: Do NOT import store here — it creates a circular dependency
-// (store → api → axiosBaseQuery → store). The window.location redirect
-// achieves the same effect (full page reload resets Redux state).
+// (store → api → axiosBaseQuery → store). Instead we accept a getToken()
+// callback from api.ts so the store can inject the token without a circular dep.
 
 interface CustomAxiosRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean;
@@ -57,9 +57,17 @@ const processQueue = (error: AxiosError | null, token: string | null): void => {
 const axiosBaseQuery = ({
   baseUrl,
   refreshUrl,
+  getToken,
 }: {
   baseUrl: string;
   refreshUrl: string;
+  /**
+   * Optional callback that returns the current access token from Redux state.
+   * Used to attach Authorization: Bearer on every request.
+   * This is the primary auth mechanism for cross-origin (deployed) environments
+   * where httpOnly SameSite=None cookies are blocked by the browser.
+   */
+  getToken?: () => string | null | undefined;
 }): BaseQueryFn<
   {
     url: string;
@@ -76,6 +84,19 @@ const axiosBaseQuery = ({
     withCredentials: true,
   });
 
+  // ─── Request interceptor ──────────────────────────────────────────────────
+  // Attach Bearer token from Redux if available.
+  // On deployed (cross-origin) sites, browsers block httpOnly cookies, so
+  // we use the token stored in-memory (Redux) as the Authorization header.
+  axiosInstance.interceptors.request.use((config) => {
+    const token = getToken?.();
+    if (token && !config.headers['Authorization']) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  });
+
+  // ─── Response interceptor ─────────────────────────────────────────────────
   axiosInstance.interceptors.response.use(
     (response) => response,
     async (error: AxiosError) => {

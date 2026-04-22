@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { User } from "./authTypes";
+import { setAccessToken } from "../../app/tokenStore";
 
 interface AuthState {
   loading: boolean;
@@ -29,6 +30,11 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.needsOtp = false;
       state.otpEmail = "";
+      // Sync token to the module-level tokenStore so axiosBaseQuery can
+      // attach it as Authorization: Bearer on every request.
+      // This is critical for deployed cross-origin environments where
+      // httpOnly cookies are not sent by the browser.
+      setAccessToken(action.payload.user?.token ?? null);
     },
     setOtpRequired(state, action) {
       state.needsOtp = true;
@@ -43,6 +49,8 @@ const authSlice = createSlice({
       state.needsOtp = false;
       state.otpEmail = "";
       state.rememberMe = false;
+      // Clear the in-memory token so no stale Bearer header is sent.
+      setAccessToken(null);
     },
     setLoading(state, action) {
       state.loading = action.payload;
